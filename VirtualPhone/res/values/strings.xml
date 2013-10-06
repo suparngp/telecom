@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">VirtualPhone</string>
+    <string name="action_settings">Settings</string>
+    <string name="title">Virtual Phone</string>
+    <string name="start">Start Socket</string>
+
+</resources>
