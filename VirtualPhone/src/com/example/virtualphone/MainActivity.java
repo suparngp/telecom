@@ -1,8 +1,14 @@
 package com.example.virtualphone;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONObject;
+
+import com.example.messages.Contact;
+import com.example.messages.ContactMessage;
+import com.google.gson.Gson;
 
 import io.socket.IOAcknowledge;
 import io.socket.IOCallback;
@@ -10,6 +16,8 @@ import io.socket.SocketIO;
 import io.socket.SocketIOException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -34,9 +42,22 @@ public class MainActivity extends Activity
       @Override
       public void onClick(View v) 
       {
+        ArrayList<Contact> contactList;
+        ContactMessage contactMsg;
+        Gson gson = new Gson();
+
         startButton.setText("Started Socket");
-        sendTextMessage("15555215554", "om");
-        readTextMessage();
+        contactList = getContacts();
+        
+        contactMsg = new ContactMessage();
+        contactMsg.setContactList(contactList);
+        contactMsg.setMsgType("Contact List");
+        
+        String gsonString = gson.toJson(contactMsg);
+        Log.e("GSON", gsonString);
+
+        //sendTextMessage("15555215554", "om");
+        //readTextMessage();
         
         try
         {
@@ -150,5 +171,35 @@ public class MainActivity extends Activity
         Log.e("READ_SMS", count);
       }
     }
+  }
+  
+  private ArrayList<Contact> getContacts()
+  {
+    ArrayList<Contact> retList = new ArrayList<Contact>();
+    Contact tmpContact;
+    
+    Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new String[] {Phone._ID, Phone.DISPLAY_NAME, Phone.NUMBER}, null, null, null);
+    String[] columns = new String[] { Phone.DISPLAY_NAME, Phone.NUMBER };
+
+    if(cursor.getCount() > 0)
+    {
+      String count = Integer.toString(cursor.getCount());
+      System.out.println(count + "\n");
+      while(cursor.moveToNext())
+      {
+        String name = cursor.getString(cursor.getColumnIndex(columns[0]));
+        String pNum = (cursor.getString(cursor.getColumnIndex(columns[1]))).replaceAll("[\\-\\s]", "");
+
+        tmpContact = new Contact();
+        tmpContact.setContactName(name);
+        tmpContact.setContactNum(pNum);
+        retList.add(tmpContact);
+
+        Log.e("GET_CONTACT", tmpContact.getContactName());
+        Log.e("GET_CONTACT", tmpContact.getContactNum());
+      }
+    }
+    
+    return retList;
   }
 }
