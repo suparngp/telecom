@@ -8,7 +8,7 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
-var socket = require("socket.io");
+var socket = require("websocket.io");
 var app = express();
 
 // all environments
@@ -31,14 +31,17 @@ app.get('/', routes.index);
 app.get('/users', user.list);
 
 
-var server = http.createServer(app);
-var io = socket.listen(server);
-io.set('destroy upgrade', false);
-server.listen(3000);
-io.sockets.on('connection', function(){
-    console.log("connected");
+var server = require('http').createServer(app);
 
-});
-io.sockets.on('message', function(message){
-    console.log(message);
+io = socket.attach(server);
+server.listen(3000);
+io.on('connection', function (socket) {
+    console.log("connection");
+    socket.on('message', function(message){
+        console.log(message);
+    })
+    socket.emit('news', { hello: 'world' });
+    socket.on('my other event', function (data) {
+        console.log(data);
+    });
 });
