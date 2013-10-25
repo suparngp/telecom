@@ -2,7 +2,6 @@ package com.example.virtualphone;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.json.JSONObject;
 
@@ -15,11 +14,19 @@ import io.socket.IOCallback;
 import io.socket.SocketIO;
 import io.socket.SocketIOException;
 import android.net.Uri;
+import android.net.sip.SipAudioCall;
+import android.net.sip.SipException;
+import android.net.sip.SipManager;
+import android.net.sip.SipProfile;
+import android.net.sip.SipRegistrationListener;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.telephony.SmsManager;
 import android.util.Log;
@@ -30,6 +37,10 @@ import android.widget.Button;
 
 public class MainActivity extends Activity
 {
+  public SipManager mSipManager = null;
+  public SipProfile sipProf = null;
+  public SipAudioCall call = null;
+  public IncomingCallReceiver callReceiver;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -37,6 +48,18 @@ public class MainActivity extends Activity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     final Button startButton = (Button) this.findViewById(R.id.start);
+    final Button bSip1 = (Button) this.findViewById(R.id.sipPhone1);
+    final Button bSip2 = (Button) this.findViewById(R.id.sipPhone2);
+    
+    
+    //Don't really need this if you add it in your manifest!!
+    IntentFilter filter = new IntentFilter();
+    filter.addAction("android.SipDemo.INCOMING_CALL");
+    callReceiver = new IncomingCallReceiver();
+    this.registerReceiver(callReceiver, filter);
+    
+    
+    //This will create and start web-socket
     startButton.setOnClickListener(new OnClickListener()
     {
       @Override
@@ -56,9 +79,6 @@ public class MainActivity extends Activity
         String gsonString = gson.toJson(contactMsg);
         Log.e("GSON", gsonString);
 
-        //sendTextMessage("15555215554", "om");
-        //readTextMessage();
-        
         try
         {
           Log.d("SOCKET", "Creating Socket");
@@ -122,8 +142,36 @@ public class MainActivity extends Activity
       }
     });
     
+    //this will register client 1 with getonsip.com server
+    bSip1.setOnClickListener(new OnClickListener()
+    {
+
+      @Override
+      public void onClick(View arg0)
+      {
+        bSip1.setText("Registered/Started SIP 1");
+        inititializeSip(getString(R.string.sipUsername1), 
+            getString(R.string.sipPswd1));
+      }
+      
+    });
+    
+    //this will register client 2 with getonsip.com server
+    bSip2.setOnClickListener(new OnClickListener()
+    {
+
+      @Override
+      public void onClick(View arg0)
+      {
+        // TODO Register Sip 2 Profile
+        bSip2.setText("Registered/Started SIP 2");
+      }
+      
+    });
+    
   }
 
+  //This creates the menu
   @Override
   public boolean onCreateOptionsMenu(Menu menu)
   {
@@ -132,6 +180,7 @@ public class MainActivity extends Activity
     return true;
   }
 
+  //Proof of Concept to send text message (VERIFIED)
   private void sendTextMessage(String sNum, String sMsg)
   {
     SmsManager sms = SmsManager.getDefault();
@@ -139,6 +188,7 @@ public class MainActivity extends Activity
     Log.d("SEND_SMS", "Sent SMS");
   }
   
+  //Proof of Concept to read text message from inbox (VERIFIED)
   private void readTextMessage()
   {
     ContentResolver contResolver = getContentResolver();
@@ -173,6 +223,7 @@ public class MainActivity extends Activity
     }
   }
   
+  //This will get contacts from the contact list (VERIFIED)
   private ArrayList<Contact> getContacts()
   {
     ArrayList<Contact> retList = new ArrayList<Contact>();
@@ -201,5 +252,137 @@ public class MainActivity extends Activity
     }
     
     return retList;
+  }
+  
+  //This registers SIP profile. Nutshell - Tells SIP server your current location
+  private void inititializeSip(String uname, String pswd)
+  {
+    if(mSipManager == null) 
+    {
+      mSipManager = SipManager.newInstance(this);
+    }
+    
+    if(mSipManager == null)
+    {
+      //Good programming - send error
+      return;
+    }
+    if(sipProf != null)
+    {
+      closeLocalProfile();
+    }
+    
+    try
+    {
+      //Builds the profile
+      SipProfile.Builder builder = new SipProfile.Builder(uname, getString(R.string.sipDomain));
+      builder.setPassword(pswd);
+      sipProf = builder.build();
+      
+      /*
+       * Creates Intent to receive incoming calls.
+       * When the SIP call is received, it is broadcasted. 
+       * Broadcast Receiver - IncominCallReceiver will catch the proadcast and take action
+       */
+      Intent i = new Intent();
+      i.setAction("android.SipDemo.INCOMING_CALL");
+      PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, Intent.FILL_IN_DATA);
+      mSipManager.open(sipProf, pi, null);
+      
+      Log.e("SIP_DEV", sipProf.getUriString());
+      
+      //Tries to Register the profile with getonsip.com server
+      mSipManager.setRegistrationListener(sipProf.getUriString(), new SipRegistrationListener() 
+      {
+        public void onRegistering(String localProfileUri) 
+        {
+            Log.e("SIP_DEV", "Registering with SIP Server...");
+        }
+
+        public void onRegistrationDone(String localProfileUri, long expiryTime) {
+            Log.e("SIP_DEV", "READY");
+        }
+
+        public void onRegistrationFailed(String localProfileUri, int errorCode,
+                String errorMessage) 
+        {
+            Log.e("SIP_DEV", "Registration failed.  Please check settings.");
+        }
+      });
+    }
+    catch (java.text.ParseException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (SipException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  //Close the profile when done with it
+  public void closeLocalProfile()
+  {
+    if(mSipManager == null)
+    {
+      return;
+    }
+    try
+    {
+      if(sipProf != null)
+      {
+        mSipManager.close(sipProf.getUriString());
+      }
+    }
+    catch (Exception ee) 
+    {
+      Log.d("SIP_DEV", "Failed to close local profile.", ee);
+    }
+  }
+  
+  
+  //Call this when you want to initiate the call
+  public void sipCall(String address)
+  {
+    try
+    {
+      SipAudioCall.Listener listener = new SipAudioCall.Listener()
+      {
+        @Override
+        public void onCallEstablished(SipAudioCall call) 
+        {
+          Log.d("SIP_DEV", "SIP Call Established");
+          call.startAudio();
+          call.setSpeakerMode(true);
+          call.toggleMute();
+        }
+
+        @Override
+        public void onCallEnded(SipAudioCall call) 
+        {
+          Log.d("SIP_DEV", "SIP Call Ended");
+        }
+      };
+      call = mSipManager.makeAudioCall(sipProf.getUriString(), address, listener, 30);
+    }
+    catch (Exception e)
+    {
+      if(sipProf != null)
+      {
+        try
+        {
+          mSipManager.close(sipProf.getUriString());
+        }
+        catch(Exception ee)
+        {
+          ee.printStackTrace();
+        }
+      }
+      if(call != null)
+      {
+        call.close();
+      }
+    }
   }
 }

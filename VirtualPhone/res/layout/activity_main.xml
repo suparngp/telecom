@@ -16,7 +16,19 @@
     <Button android:id="@+id/start"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
+    android:layout_centerVertical="true"
     android:text="@string/start" />
+    
+    <Button android:id="@+id/sipPhone1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/start"
+    android:text="@string/sipPhone1" />
+    
+    <Button android:id="@+id/sipPhone2"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/sipPhone1"
+    android:text="@string/sipPhone2" />
 
 </RelativeLayout>
