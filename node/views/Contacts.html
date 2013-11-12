@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
-
+    <title>NetCall</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+    <script type="text/javascript" src="main.js"></script>
     <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet">
     <script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>
@@ -12,7 +13,7 @@
 <div>
 
     <div class="page-header">
-        <h1 class = "text-primary text-center" ><strong>NETCALL</strong></h1>
+        <h1 class = "text-danger text-center" ><strong>NETCALL</strong></h1>
     </div>
 
     <nav class="navbar navbar-inverse" role="navigation">
@@ -31,8 +32,27 @@
     </nav>
 
     <div class="container">
-        <h3 class="text-info">Contact List</h3>
-        <p>not sure what u wanted here suparn</p>
+        <h1 class="text-info text-center">Contact List</h1>
+        <p class="text-center">All contacts loaded</p>
+    </div>
+
+    <!-- loading the contacts -->
+    <div ng-app="myApp">
+        <div ng-controller="ContactsController">
+
+            <table border="3" class="table">
+                <th class="btn-success text-center">Name</th>
+                <th class="btn-success text-center" >Phone</th>
+                <th class="btn-success text-center">SIP_Name</th>
+                <tr ng-repeat="results in contacts.details">
+                    <td>{{results.name}}</td>
+                    <td>{{results.phn}}</td>
+                    <td>{{results.sip_num}}</td>
+                </tr>
+            </table>
+
+            <script type="text/javascript" src="vendor/angular.js"></script>
+        </div>
     </div>
 
 </div>
