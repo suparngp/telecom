@@ -4,10 +4,10 @@ myApp.factory('ContactsFunction', function(){
 
     var Contacts= {};
     Contacts.details=[
-        {name: 'Suparn',    phn: '12345',     sip_num:'s09iu8' },
-        {name: 'Rajendra',  phn: '34567',     sip_num:'r@4jk'  },
-        {name: 'Kim',       phn: '56789',     sip_num:'k!iu5'  } ,
-        {name: 'Aditya',    phn: '78901',     sip_num:'@d!9i'  }
+        {name: 'Suparn',    phn: '12345',     email:'suparn@sip.com' },
+        {name: 'Rajendra',  phn: '34567',     email:''    },
+        {name: 'Kim',       phn: '56789',     email:'kim@sip.com'    } ,
+        {name: 'Aditya',    phn: '78901',     email:'adi@sip.com'    }
         // and so on
     ];
     return Contacts;

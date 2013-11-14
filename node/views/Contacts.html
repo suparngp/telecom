@@ -41,13 +41,17 @@
         <div ng-controller="ContactsController">
 
             <table border="3" class="table">
-                <th class="btn-success text-center">Name</th>
-                <th class="btn-success text-center" >Phone</th>
-                <th class="btn-success text-center">SIP_Name</th>
+                <th class="btn-primary text-center">Name</th>
+                <th class="btn-primary text-center" >Phone</th>
+                <th class="btn-primary text-center">SIP_Name</th>
+                <th class="btn-primary text-center">OPTIONS</th>
                 <tr ng-repeat="results in contacts.details">
                     <td>{{results.name}}</td>
-                    <td>{{results.phn}}</td>
-                    <td>{{results.sip_num}}</td>
+                    <td >{{results.phn}}</td>
+                    <td>{{results.email}}</td>
+                    <td class="text-center"  ng-show="results.email" >
+                        <button class="btn-success table-bordered input-sm" ng-cl>Call</button>
+                        <button class="btn-warning table-bordered input-sm" ng-cl>SMS</button></td>
                 </tr>
             </table>
 
