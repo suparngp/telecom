@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.sip.SipAudioCall;
 import android.net.sip.SipProfile;
+import android.util.Log;
 
 public class IncomingCallReceiver extends BroadcastReceiver 
 {
@@ -13,6 +14,7 @@ public class IncomingCallReceiver extends BroadcastReceiver
   public void onReceive(Context arg0, Intent arg1)
   {
     SipAudioCall incomingCall = null;
+    
     try
     {
       SipAudioCall.Listener listener = new SipAudioCall.Listener() 
@@ -26,7 +28,8 @@ public class IncomingCallReceiver extends BroadcastReceiver
             } 
             catch (Exception e) 
             {
-                e.printStackTrace();
+              Log.e("SIP_DEV", "Call Connection Failed " + e.toString());
+              e.printStackTrace();
             }
         }
       };
@@ -35,9 +38,13 @@ public class IncomingCallReceiver extends BroadcastReceiver
       incomingCall.answerCall(30);
       incomingCall.startAudio();
       incomingCall.setSpeakerMode(true);
+      
+      Log.e("SIP_DEV", "SIP Call State is "+ incomingCall.getState());
+      
       if(incomingCall.isMuted()) 
       {
-          incomingCall.toggleMute();
+        Log.e("SIP_DEV", "Incoming Call is muted. Toggling mute");
+        incomingCall.toggleMute();
       }
       mainAct.call = incomingCall;
     }

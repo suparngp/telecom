@@ -3,6 +3,7 @@ package com.example.virtualphone;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.messages.Contact;
@@ -20,7 +21,9 @@ import android.net.sip.SipManager;
 import android.net.sip.SipProfile;
 import android.net.sip.SipRegistrationListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -28,12 +31,16 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends Activity
 {
@@ -41,144 +48,155 @@ public class MainActivity extends Activity
   public SipProfile sipProf = null;
   public SipAudioCall call = null;
   public IncomingCallReceiver callReceiver;
+  
+  private String serverAdd = "http://ec2-54-201-27-106.us-west-2.compute.amazonaws.com:3000/";
+  
+  private TextView tSocStatus;
+  private TextView tSipStatus;
+  private TextView tLogs;
+  private EditText eSipAdd;
+  
+  private Button bStartSocket;
+  private Button bSipReg;
+  
+  private Handler myHandler;
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState)
+  private OnClickListener socketStartListener = new OnClickListener()
   {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-    final Button startButton = (Button) this.findViewById(R.id.start);
-    final Button bSip1 = (Button) this.findViewById(R.id.sipPhone1);
-    final Button bSip2 = (Button) this.findViewById(R.id.sipPhone2);
-    
-    
-    //Don't really need this if you add it in your manifest!!
-    IntentFilter filter = new IntentFilter();
-    filter.addAction("android.SipDemo.INCOMING_CALL");
-    callReceiver = new IncomingCallReceiver();
-    this.registerReceiver(callReceiver, filter);
-    
-    
-    //This will create and start web-socket
-    startButton.setOnClickListener(new OnClickListener()
+    @Override
+    public void onClick(View v) 
     {
-      @Override
-      public void onClick(View v) 
+      myHandler = new Handler();
+      
+      ArrayList<Contact> contactList;
+      ContactMessage contactMsg;
+      Gson gson = new Gson();
+      
+      contactList = getContacts();
+      
+      contactMsg = new ContactMessage();
+      contactMsg.setContactList(contactList);
+      contactMsg.setMsgType("Contact List");
+      
+      String gsonString = gson.toJson(contactMsg);
+      Log.e("GSON", gsonString);
+
+      try
       {
-        ArrayList<Contact> contactList;
-        ContactMessage contactMsg;
-        Gson gson = new Gson();
-
-        startButton.setText("Started Socket");
-        contactList = getContacts();
-        
-        contactMsg = new ContactMessage();
-        contactMsg.setContactList(contactList);
-        contactMsg.setMsgType("Contact List");
-        
-        String gsonString = gson.toJson(contactMsg);
-        Log.e("GSON", gsonString);
-
-        try
+        Log.d("SOCKET", "Creating Socket");
+        SocketIO socket = new SocketIO(serverAdd);
+        Log.d("SOCKET", "Connecting Socket: " + serverAdd);
+        socket.connect(new IOCallback()
         {
-          Log.d("SOCKET", "Creating Socket");
-          SocketIO socket = new SocketIO("http://127.0.0.1:3001/");
-          Log.d("SOCKET", "Connecting Socket");
-          socket.connect(new IOCallback()
+
+          @Override
+          public void on(String arg0, IOAcknowledge arg1, Object... arg2)
           {
+            Log.e("SOCKET", "In the ON function " + arg0 + " ** " + arg1.toString());
+            
+          }
 
-            @Override
-            public void on(String arg0, IOAcknowledge arg1, Object... arg2)
+          @Override
+          public void onConnect()
+          {
+            Log.e("SOCKET", "In the onConnect function ");
+            
+            myHandler.post(new Runnable()
             {
-              // TODO Auto-generated method stub
-              
-            }
 
-            @Override
-            public void onConnect()
-            {
-              // TODO Auto-generated method stub
+              @Override
+              public void run()
+              {
+                tSocStatus.setText("Connected to: " + serverAdd);
+                tSocStatus.setTextColor(Color.GREEN);
+                tSocStatus.setTypeface(null, Typeface.BOLD);
+              }
               
-            }
+            });
+          }
 
-            @Override
-            public void onDisconnect()
-            {
-              // TODO Auto-generated method stub
-              
-            }
+          @Override
+          public void onDisconnect()
+          {
+            Log.e("SOCKET", "In the onDisconnect function ");
+            
+          }
 
-            @Override
-            public void onError(SocketIOException arg0)
-            {
-              // TODO Auto-generated method stub
-              
-            }
+          @Override
+          public void onError(SocketIOException arg0)
+          {
+            final String exception = arg0.toString();
+            Log.e("SOCKET", "In the onError function " + exception);
 
-            @Override
-            public void onMessage(String arg0, IOAcknowledge arg1)
+            myHandler.post(new Runnable()
             {
-              // TODO Auto-generated method stub
-              
-            }
 
-            @Override
-            public void onMessage(JSONObject arg0, IOAcknowledge arg1)
-            {
-              // TODO Auto-generated method stub
+              @Override
+              public void run()
+              {
+                tSocStatus.setText("Server Error: " + exception);
+                tSocStatus.setTextColor(Color.RED);
+                tSocStatus.setTypeface(null, Typeface.BOLD);
+              }
               
+            });
+          }
+
+          @Override
+          public void onMessage(String arg0, IOAcknowledge arg1)
+          {
+            Log.e("SOCKET", "In the onMessage function " + arg0 + " ** " + arg1.toString());
+            
+          }
+
+          @Override
+          public void onMessage(JSONObject arg0, IOAcknowledge arg1)
+          {
+            try
+            {
+              Log.e("SOCKET", "In the onMessage JSON function " + arg0.toString(2) + " ** " + arg1.toString());
+            } catch (JSONException e)
+            {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
             }
             
-          });
-          Log.d("SOCKET", "Sending message to the server");
-          socket.send("Hello Server!");
-        } 
-        catch (MalformedURLException e)
-        {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        };
-        
-      }
-    });
-    
-    //this will register client 1 with getonsip.com server
-    bSip1.setOnClickListener(new OnClickListener()
-    {
-
-      @Override
-      public void onClick(View arg0)
+          }
+          
+        });
+        Log.d("SOCKET", "Sending message to the server");
+        socket.send("Hello Server!");
+      } 
+      catch (MalformedURLException e)
       {
-        bSip1.setText("Registered/Started SIP 1");
-        inititializeSip(getString(R.string.sipUsername1), 
-            getString(R.string.sipPswd1));
-      }
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      };
       
-    });
-    
-    //this will register client 2 with getonsip.com server
-    bSip2.setOnClickListener(new OnClickListener()
-    {
-
-      @Override
-      public void onClick(View arg0)
-      {
-        // TODO Register Sip 2 Profile
-        bSip2.setText("Registered/Started SIP 2");
-      }
-      
-    });
-    
-  }
-
-  //This creates the menu
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu)
+    }
+  };
+  
+  private OnClickListener sipRegListener = new OnClickListener()
   {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.main, menu);
-    return true;
-  }
+
+    @Override
+    public void onClick(View arg0)
+    {
+      String add = eSipAdd.getText().toString();
+      
+      if(add == null || !add.contains("@"))
+      {
+        tSipStatus.setText("Invalid Address");
+        tSipStatus.setTextColor(Color.RED);
+        tSipStatus.setTypeface(null, Typeface.BOLD);
+        return;
+      }
+      String splitr [] = add.split("\\@");
+      Log.e("SIP_REG_BUT", "uname="+splitr[0]+" domain="+splitr[1]);
+      inititializeSip(splitr[0], splitr[1], getString(R.string.sipPswd1));
+    }
+    
+  };
 
   //Proof of Concept to send text message (VERIFIED)
   private void sendTextMessage(String sNum, String sMsg)
@@ -230,33 +248,53 @@ public class MainActivity extends Activity
     Contact tmpContact;
     
     Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new String[] {Phone._ID, Phone.DISPLAY_NAME, Phone.NUMBER}, null, null, null);
-    String[] columns = new String[] { Phone.DISPLAY_NAME, Phone.NUMBER };
-
+    String[] columns = new String[] {Phone.DISPLAY_NAME, Phone.NUMBER ,ContactsContract.Contacts.DISPLAY_NAME, CommonDataKinds.Email.DATA};
+    
     if(cursor.getCount() > 0)
     {
       String count = Integer.toString(cursor.getCount());
       System.out.println(count + "\n");
       while(cursor.moveToNext())
-      {
-        String name = cursor.getString(cursor.getColumnIndex(columns[0]));
-        String pNum = (cursor.getString(cursor.getColumnIndex(columns[1]))).replaceAll("[\\-\\s]", "");
+      {      
+        String pName = cursor.getString(cursor.getColumnIndex(columns[0]));
+        Cursor cursorEmail = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, new String[] {CommonDataKinds.Email._ID, ContactsContract.Contacts.DISPLAY_NAME, CommonDataKinds.Email.DATA}, null, null, null);
+        
+        if(cursorEmail.getCount() > 0) 
+        {
+          while(cursorEmail.moveToNext()) 
+          {
+            String eName = cursorEmail.getString(cursorEmail.getColumnIndex(columns[2]));
 
-        tmpContact = new Contact();
-        tmpContact.setContactName(name);
-        tmpContact.setContactNum(pNum);
-        retList.add(tmpContact);
-
-        Log.e("GET_CONTACT", tmpContact.getContactName());
-        Log.e("GET_CONTACT", tmpContact.getContactNum());
+            if(pName.equals(eName)) 
+            {
+              String name = pName;
+              String pNum = (cursor.getString(cursor.getColumnIndex(columns[1]))).replaceAll("[\\-\\s\\(\\)]", "");
+              String email = cursorEmail.getString(cursorEmail.getColumnIndex(columns[3]));
+                          
+              tmpContact = new Contact();
+              tmpContact.setContactName(name);
+              tmpContact.setContactNum(pNum);
+              tmpContact.setContactEmail(email);
+              
+              retList.add(tmpContact);
+              
+              Log.e("GET_CONTACT", tmpContact.getContactName());
+              Log.e("GET_CONTACT", tmpContact.getContactNum());
+              Log.e("GET_CONTACT", tmpContact.getContactEmail());
+            }
+          }
+          cursorEmail.close();
+        }
       }
     }
-    
     return retList;
   }
   
   //This registers SIP profile. Nutshell - Tells SIP server your current location
-  private void inititializeSip(String uname, String pswd)
+  private void inititializeSip(String uname, String domain, String pswd)
   {
+    myHandler = new Handler();
+    
     if(mSipManager == null) 
     {
       mSipManager = SipManager.newInstance(this);
@@ -275,7 +313,7 @@ public class MainActivity extends Activity
     try
     {
       //Builds the profile
-      SipProfile.Builder builder = new SipProfile.Builder(uname, getString(R.string.sipDomain));
+      SipProfile.Builder builder = new SipProfile.Builder(uname, domain);
       builder.setPassword(pswd);
       sipProf = builder.build();
       
@@ -296,17 +334,62 @@ public class MainActivity extends Activity
       {
         public void onRegistering(String localProfileUri) 
         {
-            Log.e("SIP_DEV", "Registering with SIP Server...");
+          Log.e("SIP_DEV", "Registering with SIP Server...");
+          
+          myHandler.post(new Runnable()
+          {
+
+            @Override
+            public void run()
+            {
+              tSipStatus.setText("Registering with the SIP Server...");
+              tSipStatus.setTextColor(Color.BLACK);
+              tSipStatus.setTypeface(null, Typeface.BOLD);
+              
+            }
+            
+          });
         }
 
-        public void onRegistrationDone(String localProfileUri, long expiryTime) {
-            Log.e("SIP_DEV", "READY");
+        public void onRegistrationDone(String localProfileUri, long expiryTime) 
+        {
+          final String profile = localProfileUri;
+          Log.e("SIP_DEV", "SIP Registration SUCCESSFUL");
+            
+          myHandler.post(new Runnable()
+          {
+
+            @Override
+            public void run()
+            {
+              tSipStatus.setText("Registering SUCCESSFUL - " + profile);
+              tSipStatus.setTextColor(Color.GREEN);
+              tSipStatus.setTypeface(null, Typeface.BOLD);
+            }
+            
+          });
         }
 
         public void onRegistrationFailed(String localProfileUri, int errorCode,
                 String errorMessage) 
         {
-            Log.e("SIP_DEV", "Registration failed.  Please check settings.");
+          final String profile = localProfileUri;
+          final String errMsg = errorMessage;
+          
+          Log.e("SIP_DEV", "Registration failed.  Please check settings.");
+          
+          myHandler.post(new Runnable()
+          {
+
+            @Override
+            public void run()
+            {
+              tSipStatus.setText("Registering FAILED - " + profile + " " + errMsg);
+              tSipStatus.setTextColor(Color.RED);
+              tSipStatus.setTypeface(null, Typeface.BOLD);
+            }
+            
+          });
         }
       });
     }
@@ -337,7 +420,7 @@ public class MainActivity extends Activity
     }
     catch (Exception ee) 
     {
-      Log.d("SIP_DEV", "Failed to close local profile.", ee);
+      Log.e("SIP_DEV", "Failed to close local profile.", ee);
     }
   }
   
@@ -352,7 +435,7 @@ public class MainActivity extends Activity
         @Override
         public void onCallEstablished(SipAudioCall call) 
         {
-          Log.d("SIP_DEV", "SIP Call Established");
+          Log.e("SIP_DEV", "SIP Call Established");
           call.startAudio();
           call.setSpeakerMode(true);
           call.toggleMute();
@@ -361,7 +444,7 @@ public class MainActivity extends Activity
         @Override
         public void onCallEnded(SipAudioCall call) 
         {
-          Log.d("SIP_DEV", "SIP Call Ended");
+          Log.e("SIP_DEV", "SIP Call Ended");
         }
       };
       call = mSipManager.makeAudioCall(sipProf.getUriString(), address, listener, 30);
@@ -384,5 +467,42 @@ public class MainActivity extends Activity
         call.close();
       }
     }
+  }
+  
+  @Override
+  public void onCreate(Bundle savedInstanceState)
+  {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    bStartSocket = (Button) this.findViewById(R.id.startSocket);
+    bSipReg = (Button) this.findViewById(R.id.sipReg);
+    
+    tSocStatus = (TextView) this.findViewById(R.id.socketStatus);
+    tSipStatus = (TextView) this.findViewById(R.id.sipStatus);
+    tLogs = (TextView) this.findViewById(R.id.logs);
+    
+    eSipAdd = (EditText) this.findViewById(R.id.sipAdd);
+    
+    //Don't really need this if you add it in your manifest!!
+    IntentFilter filter = new IntentFilter();
+    filter.addAction("android.SipDemo.INCOMING_CALL");
+    callReceiver = new IncomingCallReceiver();
+    this.registerReceiver(callReceiver, filter);
+    
+    
+    //This will create and start web-socket
+    bStartSocket.setOnClickListener(socketStartListener);
+    
+    //this will register client 1 with getonsip.com server
+    bSipReg.setOnClickListener(sipRegListener);
+  }
+
+  //This creates the menu
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu)
+  {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.main, menu);
+    return true;
   }
 }

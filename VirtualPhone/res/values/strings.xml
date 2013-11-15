@@ -4,10 +4,11 @@
     <string name="app_name">VirtualPhone</string>
     <string name="action_settings">Settings</string>
     <string name="title">Virtual Phone</string>
-    <string name="start">Start Socket</string>
-    <string name="sipPhone1">Start SIP 1</string>
-    <string name="sipPhone2">Start SIP 2</string>
-    <string name="sipUsername1">adthakkar</string>
-    <string name="sipDomain">getonsip.com</string>
-    <string name="sipPswd1">tsd1314</string>
+    <string name="startSocket">Start Socket</string>
+    <string name="sipRegister">Register</string>
+    <string name="sipUsername1">eogus618</string>
+    <string name="sipDomain">sip.linphone.org</string>
+    <string name="sipPswd1">dxk123330</string>
+    <string name="socStatus"><b>Not Connected to Server</b></string>
+    <string name="sipStatus"><b>SIP Client Not Registered</b></string>
 </resources>
