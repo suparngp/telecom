@@ -8,6 +8,8 @@ import org.json.JSONObject;
 
 import com.example.messages.Contact;
 import com.example.messages.ContactMessage;
+import com.example.messages.SMS;
+import com.example.messages.SMSMessage;
 import com.google.gson.Gson;
 
 import io.socket.IOAcknowledge;
@@ -70,15 +72,27 @@ public class MainActivity extends Activity
       
       ArrayList<Contact> contactList;
       ContactMessage contactMsg;
+      
+      ArrayList<SMS> smsList;
+      SMSMessage txtMessage;
+      
       Gson gson = new Gson();
       
       contactList = getContacts();
+      smsList = readTextMessage();
       
       contactMsg = new ContactMessage();
       contactMsg.setContactList(contactList);
       contactMsg.setMsgType("Contact List");
       
+      txtMessage = new SMSMessage();
+      txtMessage.setSmsList(smsList);
+      txtMessage.setMsgType("Text Message List");
+      
       String gsonString = gson.toJson(contactMsg);
+      Log.e("GSON", gsonString);
+      
+      gsonString = gson.toJson(txtMessage);
       Log.e("GSON", gsonString);
 
       try
@@ -207,38 +221,52 @@ public class MainActivity extends Activity
   }
   
   //Proof of Concept to read text message from inbox (VERIFIED)
-  private void readTextMessage()
+  private ArrayList<SMS> readTextMessage()
   {
+    ArrayList<SMS> smsList = new ArrayList<SMS>();
+    SMS tmpSMS;
+    
     ContentResolver contResolver = getContentResolver();
     final String[] projection = new String[]{"*"};
     Uri uri = Uri.parse("content://sms/");
     Cursor query = contResolver.query(uri, projection, null, null, null);
     
-    String[] columns = new String[] { "address", "person", "date", "body","type" };
+    String[] columns = new String[] { "address", "person", "date", "body","type", "read" };
     
     if(query.getCount() > 0)
     {
-      String count = Integer.toString(query.getCount());
-      System.out.println(count + "\n");
       while(query.moveToNext())
       {
-        String address = query.getString(query.getColumnIndex(columns[0]));
+        String address = query.getString(query.getColumnIndex(columns[0])).replaceAll("[\\-\\s\\(\\)]", "");
         String name = query.getString(query.getColumnIndex(columns[1]));
         String date = query.getString(query.getColumnIndex(columns[2]));
         String msg = query.getString(query.getColumnIndex(columns[3]));
         String type = query.getString(query.getColumnIndex(columns[4]));
+        String read = query.getString(query.getColumnIndex(columns[5]));
         
-        Log.e("READ_SMS", address);
+        tmpSMS = new SMS();
+        
+        tmpSMS.setContactNum(address);
+        tmpSMS.setContactName(name);
+        tmpSMS.setDate(date);
+        tmpSMS.setMessage(msg);
+        tmpSMS.setMsgType(type);
+        tmpSMS.setMsgRead(read);
+        
+        smsList.add(tmpSMS);
+        
+        /*Log.e("READ_SMS address=", address);
         if(name != null)
         {
-          Log.e("READ_SMS", name);
+          Log.e("READ_SMS name=", name);
         }
-        Log.e("READ_SMS", date);
-        Log.e("READ_SMS", msg);
-        Log.e("READ_SMS", type);
-        Log.e("READ_SMS", count);
+        Log.e("READ_SMS date=", date);
+        Log.e("READ_SMS msg=", msg);
+        Log.e("READ_SMS type=", type);
+        Log.e("READ_SMS count=", read); */
       }
     }
+    return smsList;
   }
   
   //This will get contacts from the contact list (VERIFIED)
@@ -278,9 +306,9 @@ public class MainActivity extends Activity
               
               retList.add(tmpContact);
               
-              Log.e("GET_CONTACT", tmpContact.getContactName());
-              Log.e("GET_CONTACT", tmpContact.getContactNum());
-              Log.e("GET_CONTACT", tmpContact.getContactEmail());
+              //Log.e("GET_CONTACT", tmpContact.getContactName());
+              //Log.e("GET_CONTACT", tmpContact.getContactNum());
+              //Log.e("GET_CONTACT", tmpContact.getContactEmail());
             }
           }
           cursorEmail.close();
@@ -397,7 +425,8 @@ public class MainActivity extends Activity
     {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    } catch (SipException e)
+    } 
+    catch (SipException e)
     {
       // TODO Auto-generated catch block
       e.printStackTrace();
