@@ -45,6 +45,8 @@ io.sockets.on('connection', function (socket) {
     socket.on('message', function(message){
         console.log(message);
         socket.send(message);
+
+        socket.emit("Send me contacts", {'data': 'yahoo'});
     });
 
     //socket.emit('news', { hello: 'world' });
