@@ -36,9 +36,9 @@ app.get('/users', user.list);
 
 
 var server = require('http').createServer(app);
-
-var io = socket.listen(app);
 server.listen(3000);
+var io = socket.listen(server);
+
 
 io.sockets.on('connection', function (socket) {
     console.log("connection");
