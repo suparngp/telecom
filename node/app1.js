@@ -1,3 +1,7 @@
+/**
+ * Created by suparngupta on 11/16/13.
+ */
+
 
 /**
  * Module dependencies.
@@ -8,7 +12,7 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
-var socket = require("websocket.io");
+var socket = require("socket.io");
 var app = express();
 
 // all environments
@@ -24,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
 if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
+    app.use(express.errorHandler());
 }
 
 app.get('/', routes.index);
@@ -32,22 +36,39 @@ app.get('/users', user.list);
 
 
 var server = require('http').createServer(app);
-
-io = socket.attach(server);
 server.listen(3000);
-io.on('connection', function (socket) {
+var io = socket.listen(server);
+
+
+io.sockets.on('connection', function (socket) {
     console.log("connection");
     socket.on('message', function(message){
         console.log(message);
         socket.send(message);
 
-        switch(message.msgType){
-
-        }
+        socket.emit("contact_req", {'data': 'yahoo'});
+        socket.emit('sms_req', {data: 'yahoo'});
+        socket.emit('send_sms_req', JSON.stringify({number: '15555215556', message: "I am also!"}));
     });
 
-    socket.emit('news', { hello: 'world' });
+    //socket.emit('news', { hello: 'world' });
     socket.on('my other event', function (data) {
         console.log(data);
+    });
+
+    socket.on('contact_res', function(message){
+        console.log(message);
+        console.log("Received the contacts list");
+        socket.send("Received the contacts");
+    });
+    socket.on('sms_res', function(message){
+        console.log("Received the smses");
+        console.log(message);
+        socket.send('Received the smses');
+    });
+
+    socket.on('send_sms_res', function(message){
+        console.log("Send SMS response received");
+        console.log(message);
     });
 });
