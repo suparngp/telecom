@@ -45,14 +45,16 @@ io.sockets.on('connection', function (socket) {
     socket.on('message', function(message){
         console.log(message);
         socket.send(message);
-
-        switch(message.msgType){
-
-        }
     });
 
     //socket.emit('news', { hello: 'world' });
     socket.on('my other event', function (data) {
         console.log(data);
+    });
+
+    socket.on('Contacts', function(message){
+        console.log(message);
+        console.log("Received the contacts list");
+        socket.send("Received the contacts");
     });
 });
