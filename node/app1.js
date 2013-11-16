@@ -1,3 +1,7 @@
+/**
+ * Created by suparngupta on 11/16/13.
+ */
+
 
 /**
  * Module dependencies.
@@ -8,7 +12,7 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
-var socket = require("websocket.io");
+var socket = require("socket.io");
 var app = express();
 
 // all environments
@@ -24,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
 if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
+    app.use(express.errorHandler());
 }
 
 app.get('/', routes.index);
@@ -33,9 +37,10 @@ app.get('/users', user.list);
 
 var server = require('http').createServer(app);
 
-io = socket.attach(server);
+var io = socket.listen(app);
 server.listen(3000);
-io.on('connection', function (socket) {
+
+io.sockets.on('connection', function (socket) {
     console.log("connection");
     socket.on('message', function(message){
         console.log(message);
