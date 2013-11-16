@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>NetCall</title>
+    <script src="../../bower_components/jquery/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
     <script type="text/javascript" src="main.js"></script>
     <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet">
@@ -10,29 +11,28 @@
 
 
 <body>
-<div>
 
-    <div class="page-header">
-        <h1 class = "text-danger text-center" ><strong>NETCALL</strong></h1>
+<div class="jumbotron "  id="upper" >
+    <div>
+        <h1 class ="text-center "><strong>NETCALL</strong></h1>
+        <p class="text-center">Left your Phone at Home?? DONT'S LOOK BACK!</p>
     </div>
+</div>
 
-    <nav class="navbar navbar-inverse" role="navigation">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand glyphicon-text-width" href="index'.html">HOME</a>
-            <a class="navbar-brand glyphicon-text-width" href="Contacts.html">CONTACTS</a>
-            <a class="navbar-brand glyphicon-text-width" href="Messaging.html">MESSAGING</a>
-        </div>
-    </nav>
+<div id="left">
+    <div>
+        <ul class="nav nav-pills " ><br><br>
+            <h3><a class="text-muted" href="index'.html">&nbsp; HOME</a></h3><br>
+            <h3><a class="text-muted" href="Contacts.html" data-link-color="white">&nbsp; CONTACTS</a></h3><br>
+            <h3><a class="text-muted" href="#">&nbsp; MESSAGES</a></h3>
+        </ul>
+    </div>
+</div>
 
+
+<div id="right">
     <div class="container">
-        <h3 class="text-info">Message History</h3>
+        <h3 class="text-danger text-center">Message History</h3><br><br>
         <div class="row">
             <div class="col-sm-offset-3 col-sm-6">
                 <div class="media">
@@ -47,8 +47,9 @@
             </div>
         </div>
     </div>
-
 </div>
+
+
 </body>
 
 </html>

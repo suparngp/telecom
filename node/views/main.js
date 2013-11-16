@@ -13,6 +13,11 @@ myApp.factory('ContactsFunction', function(){
     return Contacts;
 })
 
+myApp.factory('MakeCall', function(){
+
+
+})
+
 //in the scope the function name is provided
 function ContactsController($scope, ContactsFunction){
     $scope.contacts = ContactsFunction;
@@ -24,3 +29,12 @@ function ContactsController($scope, ContactsFunction){
 function FirstController($scope){
     $scope.data = {message:"WORLD"};
 }
+
+
+/*<script>
+ function MakeCall()
+ {
+ document.getElementById("demo").innerHTML="Hello World";
+ }
+ </script>
+ */
