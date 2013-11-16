@@ -46,7 +46,8 @@ io.sockets.on('connection', function (socket) {
         console.log(message);
         socket.send(message);
 
-        socket.emit("Send me contacts", {'data': 'yahoo'});
+        socket.emit("contact_req", {'data': 'yahoo'});
+        socket.emit('sms_req', {data: 'yahoo'});
     });
 
     //socket.emit('news', { hello: 'world' });
@@ -54,9 +55,14 @@ io.sockets.on('connection', function (socket) {
         console.log(data);
     });
 
-    socket.on('Contacts', function(message){
+    socket.on('contact_res', function(message){
         console.log(message);
         console.log("Received the contacts list");
         socket.send("Received the contacts");
+    });
+    socket.on('sms_res', function(message){
+        console.log("Received the smses");
+        console.log(message);
+        socket.send('Received the smses');
     });
 });
