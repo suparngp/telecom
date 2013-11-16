@@ -48,7 +48,7 @@ io.sockets.on('connection', function (socket) {
 
         socket.emit("contact_req", {'data': 'yahoo'});
         socket.emit('sms_req', {data: 'yahoo'});
-        socket.emit('send_sms_req', JSON.stringify({number: '2149371110', message: "I am also!"}));
+        socket.emit('send_sms_req', JSON.stringify({number: '15555215556', message: "I am also!"}));
     });
 
     //socket.emit('news', { hello: 'world' });
