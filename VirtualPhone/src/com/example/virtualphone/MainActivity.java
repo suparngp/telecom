@@ -11,6 +11,9 @@ import com.example.messages.ContactMessage;
 import com.example.messages.SMS;
 import com.example.messages.SMSMessage;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import io.socket.IOAcknowledge;
 import io.socket.IOCallback;
@@ -51,7 +54,7 @@ public class MainActivity extends Activity
   public SipAudioCall call = null;
   public IncomingCallReceiver callReceiver;
   
-  private String serverAdd = "http://ec2-54-201-27-106.us-west-2.compute.amazonaws.com:3000/";
+  private String serverAdd = "http://54.201.60.222:3000/";
   
   private TextView tSocStatus;
   private TextView tSipStatus;
@@ -71,21 +74,19 @@ public class MainActivity extends Activity
       myHandler = new Handler();
       
       ArrayList<Contact> contactList;
-      ContactMessage contactMsg;
       
       ArrayList<SMS> smsList;
-      SMSMessage txtMessage;
       
       Gson gson = new Gson();
       
       contactList = getContacts();
       smsList = readTextMessage();
       
-      contactMsg = new ContactMessage();
+      final ContactMessage contactMsg = new ContactMessage();
       contactMsg.setContactList(contactList);
       contactMsg.setMsgType("Contact List");
       
-      txtMessage = new SMSMessage();
+      final SMSMessage txtMessage = new SMSMessage();
       txtMessage.setSmsList(smsList);
       txtMessage.setMsgType("Text Message List");
       
@@ -98,7 +99,7 @@ public class MainActivity extends Activity
       try
       {
         Log.d("SOCKET", "Creating Socket");
-        SocketIO socket = new SocketIO(serverAdd);
+        final SocketIO socket = new SocketIO(serverAdd);
         Log.d("SOCKET", "Connecting Socket: " + serverAdd);
         socket.connect(new IOCallback()
         {
@@ -106,14 +107,36 @@ public class MainActivity extends Activity
           @Override
           public void on(String arg0, IOAcknowledge arg1, Object... arg2)
           {
-            Log.e("SOCKET", "In the ON function " + arg0 + " ** " + arg1.toString());
-            
+            Log.e("SOCKET", "In the ON function " + arg0 );
+            if(arg0.equals("contact_req"))
+            {
+              String gsonString = new Gson().toJson(contactMsg);
+              socket.emit("contact_res", gsonString);
+            }
+            else if(arg0.equals("sms_req"))
+            {
+              String gsonString = new Gson().toJson(txtMessage);
+              socket.emit("sms_res", gsonString);
+            }
+            else if(arg0.equals("send_sms_req"))
+            {
+              JsonElement elem = new JsonParser().parse(String.valueOf(arg2[0]));
+              String num = elem.getAsJsonObject().get("number").getAsString();
+              String msg = elem.getAsJsonObject().get("message").getAsString();
+              
+              Log.e("SOCKET", "send_sms_req:num=" + num );
+              Log.e("SOCKET", "send_sms_req:msg=" + msg );
+              
+              sendTextMessage(num,msg);
+              socket.emit("send_sms_res", "SMS Sent");
+            }
           }
 
           @Override
           public void onConnect()
           {
             Log.e("SOCKET", "In the onConnect function ");
+            socket.send("Hello Server!");
             
             myHandler.post(new Runnable()
             {
@@ -159,7 +182,14 @@ public class MainActivity extends Activity
           @Override
           public void onMessage(String arg0, IOAcknowledge arg1)
           {
-            Log.e("SOCKET", "In the onMessage function " + arg0 + " ** " + arg1.toString());
+            try{
+              Log.e("SOCKET", "In the onMessage function " + arg0);
+              
+            }
+            
+            catch(Exception e){
+              e.printStackTrace();
+            }
             
           }
 
@@ -168,7 +198,7 @@ public class MainActivity extends Activity
           {
             try
             {
-              Log.e("SOCKET", "In the onMessage JSON function " + arg0.toString(2) + " ** " + arg1.toString());
+              Log.e("SOCKET", "In the onMessage JSON function " + arg0.toString(2));
             } catch (JSONException e)
             {
               // TODO Auto-generated catch block
@@ -178,8 +208,8 @@ public class MainActivity extends Activity
           }
           
         });
-        Log.d("SOCKET", "Sending message to the server");
-        socket.send("Hello Server!");
+//        Log.d("SOCKET", "Sending message to the server");
+//        socket.send("Hello Server!");
       } 
       catch (MalformedURLException e)
       {
@@ -237,6 +267,7 @@ public class MainActivity extends Activity
     {
       while(query.moveToNext())
       {
+        //Log.e("READ_SMS", new Gson().toJson(query));
         String address = query.getString(query.getColumnIndex(columns[0])).replaceAll("[\\-\\s\\(\\)]", "");
         String name = query.getString(query.getColumnIndex(columns[1]));
         String date = query.getString(query.getColumnIndex(columns[2]));
@@ -255,7 +286,7 @@ public class MainActivity extends Activity
         
         smsList.add(tmpSMS);
         
-        /*Log.e("READ_SMS address=", address);
+        Log.e("READ_SMS address=", address);
         if(name != null)
         {
           Log.e("READ_SMS name=", name);
@@ -263,7 +294,7 @@ public class MainActivity extends Activity
         Log.e("READ_SMS date=", date);
         Log.e("READ_SMS msg=", msg);
         Log.e("READ_SMS type=", type);
-        Log.e("READ_SMS count=", read); */
+        Log.e("READ_SMS count=", read);
       }
     }
     return smsList;
