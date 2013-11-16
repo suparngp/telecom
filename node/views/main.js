@@ -16,6 +16,9 @@ myApp.factory('ContactsFunction', function(){
 //in the scope the function name is provided
 function ContactsController($scope, ContactsFunction){
     $scope.contacts = ContactsFunction;
+    $scope.call = function(target){
+        console.log("I am calling " + target);
+    }
 }
 
 function FirstController($scope){

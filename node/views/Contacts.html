@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>NetCall</title>
+    <script src="../../bower_components/jquery/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
     <script type="text/javascript" src="main.js"></script>
     <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet">
@@ -50,12 +51,11 @@
                     <td >{{results.phn}}</td>
                     <td>{{results.email}}</td>
                     <td class="text-center"  ng-show="results.email" >
-                        <button class="btn-success table-bordered input-sm" ng-cl>Call</button>
+                        <button class="btn-success table-bordered input-sm" ng-click="call(results.email)">Call</button>
                         <button class="btn-warning table-bordered input-sm" ng-cl>SMS</button></td>
                 </tr>
             </table>
 
-            <script type="text/javascript" src="vendor/angular.js"></script>
         </div>
     </div>
 
