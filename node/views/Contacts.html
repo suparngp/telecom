@@ -5,9 +5,9 @@
     <script src="../../bower_components/jquery/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
     <script type="text/javascript" src="main.js"></script>
-    <script type="text/javascript" src="main.js"></script>
 
     <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+    <link href="../../node/views/custom.css" type="text/css" rel="stylesheet">
     <script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>
 
@@ -17,16 +17,15 @@
 <header>
     <nav class="navbar navbar-fixed-top navbar-inverse">
         <div class="container">
-            <a class="navbar-brand" href="/">NetCall</a>
+            <a class="navbar-brand" href="/"></a>
         </div>
     </nav>
 </header>
 
-<div class="container" style="padding-top: 60px">
+<div class="container" style="padding-top: 20px">
     <div class="jumbotron " id="upper">
         <div>
-            <h1 class="text-center "><strong>NETCALL</strong></h1>
-
+            <h1 class="text-center "><strong><span class="glyphicon glyphicon-send"></span>&nbsp;NETCALL</strong></h1>
             <p class="text-center">Left your Phone at Home?? Never LOOK BACK!</p>
         </div>
     </div>
@@ -35,17 +34,16 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-3">
-            <ul class="nav nav-pills nav-stacked">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#/contacts">Contacts</a></li>
-                <li><a href="#/messages">Messages</a></li>
+            <ul class="nav nav-pills nav-stacked" style="visibility: inherit">
+                <li><a href="index.html"><span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Home</a></li>
+                <li class="active"><a href="#"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Contacts</a></li>
+                <li><a href="Messaging.html"><span class="glyphicon glyphicon-envelope"></span>&nbsp;&nbsp;Messages</a></li>
             </ul>
         </div>
         <!-- loading the contacts -->
-        <div class="col-sm-9">
-            <div class="page-header">
-                <h3 class="text-info text-center">Contact List</h3>
-
+        <div class="col-sm-8">
+            <div class="page-header navbar-text text-center col-sm-12" style="background-color: lightgoldenrodyellow">
+                <h3 class="text-center">Contact List</h3>
                 <p class="text-center">All contacts loaded</p>
             </div>
             <div ng-controller="ContactsController">
@@ -66,8 +64,8 @@
                             </div>
                             <div class="panel-footer">
                                 <div ng-show="results.email">
-                                    <button class="btn-success table-bordered input-sm" ng-cl>Call</button>
-                                    <button class="btn-warning table-bordered input-sm" ng-cl>SMS</button>
+                                    <button class="btn-success table-bordered input-sm" ng-cl><span class="glyphicon glyphicon-phone"></span>&nbsp;Call</button>
+                                    <button class="btn-warning table-bordered input-sm" ng-cl><span class="glyphicon glyphicon-envelope"></span>&nbsp;SMS</button>
                                 </div>
                             </div>
                         </div>

@@ -1,6 +1,4 @@
 
-body { background: black ;appearance: normal }
-
 
 #left {
     width:250px;
@@ -14,11 +12,9 @@ body { background: black ;appearance: normal }
 }
 
 #upper {
-    width:1370px;
-    height:200px;
-    float:left;
     background: #1B0E3C;
     color: ghostwhite;
+    border: Background;
 
 }
 #right {
