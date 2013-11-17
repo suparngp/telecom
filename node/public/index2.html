@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="stylesheets/bootstrap.css" type="text/css" rel="stylesheet">
+    <link href="/stylesheets/custom.css" type="text/css" rel="stylesheet">
+    <title>NetCall</title>
+    <script src="javascripts/jquery.min.js"></script>
+    <script src="javascripts/angular.min.js"></script>
+    <script src="javascripts/angular-ui-router.min.js"></script>
+    <script src="javascripts/main.js"></script>
+
+    <script src="javascripts/bootstrap.min.js"></script>
+
+</head>
+<!-- BODY STARTS........-->
+
+<body ng-app="myApp">
+
+<header>
+    <nav class="navbar navbar-fixed-top navbar-inverse">
+        <div class="container">
+            <a class="navbar-brand" href="/"></a>
+        </div>
+    </nav>
+</header>
+
+<div class="container" style="padding-top: 20px">
+    <div class="jumbotron" id="upper">
+        <div>
+            <h1 class ="text-center"><strong><span class="glyphicon glyphicon-send"></span>&nbsp;NETCALL</strong></h1>
+            <p class="text-center">Left your Phone at Home?? Never LOOK BACK!</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <ul class="nav nav-pills nav-stacked" style="visibility: inherit">
+                <li class="active"><a ui-sref="home"><span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Home</a></li>
+                <li><a ui-sref="contacts"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Contacts</a></li>
+                <li><a ui-sref="messages"><span class="glyphicon glyphicon-envelope"></span>&nbsp;&nbsp;Messages</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9" >
+            <div ui-view></div>
+        </div>
+    </div>
+</div>
+
+<div id="footer" style="height: 60px;
+background-color: #f5f5f5; margin-top: 60px;">
+    <div class="container">
+        <p class="text-muted credit" style="margin: 20px 0">
+            Designed by Aditya, Raj, Kim, Suparn
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

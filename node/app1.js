@@ -31,9 +31,22 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
+app.get('/', function(req, res, next){
+    res.redirect('/index2.html');
+});
 app.get('/users', user.list);
 
+app.get('/contacts', function(req, res, next){
+    var Contacts= {};
+    Contacts.details=[
+        {name: 'Suparn',    phn: '12345',     email:'some@getonsip.com' },
+        {name: 'Rajendra',  phn: '34567',     email:''    },
+        {name: 'Kim',       phn: '56789',     email:'KoreaKim@sip.com'    } ,
+        {name: 'Aditya',    phn: '78901',     email:'adthakkar@sip.com'    }
+        // and so on
+    ];
+    res.json(Contacts);
+});
 
 var server = require('http').createServer(app);
 server.listen(3000);

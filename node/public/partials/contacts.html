@@ -1,0 +1,30 @@
+<div class="page-header navbar-text text-center col-sm-12" style="background-color: lightgoldenrodyellow">
+    <h3 class="text-center">Contact List</h3>
+    <p class="text-center">All contacts loaded</p>
+</div>
+<div ng-controller="ContactsController">
+    <div contacts class="panel-group" id="contacts-parent">
+        <div class="panel panel-info" ng-repeat="results in contacts.details">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <a data-toggle="collapse" data-parent="#contacts-parent"
+                       href="#collapse-{{ results.phn }}">
+                        <h4><strong>{{results.name}}</strong></h4>
+                    </a>
+                </div>
+            </div>
+            <div id="collapse-{{ results.phn }}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <strong>CELL: </strong>{{results.phn}} &nbsp;&nbsp;&nbsp;<strong>Email: </strong>{{results.email}}
+
+                </div>
+                <div class="panel-footer">
+                    <div ng-show="results.email">
+                        <button class="btn-success table-bordered input-sm" ng-click="call(results.email)"><span class="glyphicon glyphicon-phone"></span>&nbsp;Call</button>
+                        <button class="btn-warning table-bordered input-sm" ng-click=""><span class="glyphicon glyphicon-envelope"></span>&nbsp;SMS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
