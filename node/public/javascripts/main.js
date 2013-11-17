@@ -78,6 +78,10 @@ function FirstController($scope){
 }
 
 
+
+myApp.controller('SideNavController', function($scope){
+    $scope.selected = 'home';
+});
 /*<script>
  function MakeCall()
  {

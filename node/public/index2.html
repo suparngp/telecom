@@ -28,7 +28,8 @@
 <div class="container" style="padding-top: 20px">
     <div class="jumbotron" id="upper">
         <div>
-            <h1 class ="text-center"><strong><span class="glyphicon glyphicon-send"></span>&nbsp;NETCALL</strong></h1>
+            <h1 class="text-center"><strong><span class="glyphicon glyphicon-send"></span>&nbsp;NETCALL</strong></h1>
+
             <p class="text-center">Left your Phone at Home?? Never LOOK BACK!</p>
         </div>
     </div>
@@ -36,14 +37,19 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-3" ng-controller="SideNavController">
             <ul class="nav nav-pills nav-stacked" style="visibility: inherit">
-                <li class="active"><a ui-sref="home"><span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Home</a></li>
-                <li><a ui-sref="contacts"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Contacts</a></li>
-                <li><a ui-sref="messages"><span class="glyphicon glyphicon-envelope"></span>&nbsp;&nbsp;Messages</a></li>
+                <li ng-click="selected = 'home'" ng-class="{active: selected == 'home'}"><a ui-sref="home">
+                    <span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Home</a>
+                </li>
+                <li ng-click="selected = 'contacts'" ng-class="{active: selected == 'contacts'}"><a ui-sref="contacts">
+                    <span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Contacts</a></li>
+                <li ng-click="selected = 'messages'" ng-class="{active: selected == 'messages'}"><a ui-sref="messages">
+                    <span class="glyphicon glyphicon-envelope"></span>&nbsp;&nbsp;Messages</a>
+                </li>
             </ul>
         </div>
-        <div class="col-sm-9" >
+        <div class="col-sm-9">
             <div ui-view></div>
         </div>
     </div>
