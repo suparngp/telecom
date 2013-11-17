@@ -2,60 +2,91 @@
 <html>
 <head>
     <title>NetCall</title>
+    <script src="../../bower_components/jquery/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript" src="main.js"></script>
+
     <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet">
     <script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>
 
 
-<body>
+<body ng-app="myApp">
 
-<div class="jumbotron "  id="upper" >
-    <div>
-        <h1 class ="text-center "><strong>NETCALL</strong></h1>
-        <p class="text-center">Left your Phone at Home?? DONT'S LOOK BACK!</p>
+<header>
+    <nav class="navbar navbar-fixed-top navbar-inverse">
+        <div class="container">
+            <a class="navbar-brand" href="/">NetCall</a>
+        </div>
+    </nav>
+</header>
+
+<div class="container" style="padding-top: 60px">
+    <div class="jumbotron " id="upper">
+        <div>
+            <h1 class="text-center "><strong>NETCALL</strong></h1>
+
+            <p class="text-center">Left your Phone at Home?? Never LOOK BACK!</p>
+        </div>
     </div>
 </div>
 
-<div id="left">
-    <div>
-        <ul class="nav nav-pills " ><br><br>
-            <h3><a class="text-muted" href="index'.html">&nbsp; HOME</a></h3><br>
-            <h3><a class="text-muted" href="#" data-link-color="white">&nbsp; CONTACTS</a></h3><br>
-            <h3><a class="text-muted" href="Messaging.html">&nbsp; MESSAGES</a></h3>
-        </ul>
-    </div>
-</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#/contacts">Contacts</a></li>
+                <li><a href="#/messages">Messages</a></li>
+            </ul>
+        </div>
+        <!-- loading the contacts -->
+        <div class="col-sm-9">
+            <div class="page-header">
+                <h3 class="text-info text-center">Contact List</h3>
 
+                <p class="text-center">All contacts loaded</p>
+            </div>
+            <div ng-controller="ContactsController">
+                <div class="panel-group" id="contacts-parent">
+                    <div class="panel panel-info" ng-repeat="results in contacts.details">
+                        <div class="panel-heading">
+                            <div class="panel-title">
+                                <a data-toggle="collapse" data-parent="#contacts-parent"
+                                   href="#collapse-{{ results.phn }}">
+                                        <h4><strong>{{results.name}}</strong></h4>
+                                   </a>
+                            </div>
+                        </div>
+                        <div id="collapse-{{ results.phn }}" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <strong>CELL: </strong>{{results.phn}} &nbsp;&nbsp;&nbsp;<strong>Email: </strong>{{results.email}}
 
-<div id="right">
-    <div class="container">
-        <h1 class="text-info text-center">Contact List</h1>
-        <p class="text-center">All contacts loaded</p>
-    </div>
-
-    <!-- loading the contacts -->
-    <div ng-app="myApp">
-        <div ng-controller="ContactsController">
-
-            <div class="panel panel-info" ng-repeat="results in contacts.details">
-                <div class="panel-body panel-info text-left ">
-                    <h4><strong>{{results.name}}</strong></h4>
-                    <div ng-show= "results.email" >
-                        <button class="btn-success table-bordered input-sm" ng-cl>Call</button>
-                        <button class="btn-warning table-bordered input-sm" ng-cl>SMS</button>
+                            </div>
+                            <div class="panel-footer">
+                                <div ng-show="results.email">
+                                    <button class="btn-success table-bordered input-sm" ng-cl>Call</button>
+                                    <button class="btn-warning table-bordered input-sm" ng-cl>SMS</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="panel-footer panel-info text-left">
-                    <strong>CELL: </strong>{{results.phn}} &nbsp;&nbsp;&nbsp;<strong>Email: </strong>{{results.email}}
-                </div>
+                <script type="text/javascript" src="vendor/angular.js"></script>
             </div>
-
-
-            <script type="text/javascript" src="vendor/angular.js"></script>
         </div>
+    </div>
+</div>
+
+<div id="footer" style="height: 60px;
+background-color: #f5f5f5; margin-top: 60px;">
+    <div class="container">
+
+                <p class="text-muted credit" style="margin: 20px 0">
+                    Designed by Aditya, Raj, Kim, Suparn
+                </p>
+
     </div>
 </div>
 
