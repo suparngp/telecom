@@ -1,0 +1,33 @@
+
+body { background: black ;appearance: normal }
+
+
+#left {
+    width:250px;
+    height: 300px;
+    background:#000000;
+    font-style: italic;
+    color: snow;
+    float:left;
+    margin-top: 32px;
+
+}
+
+#upper {
+    width:1370px;
+    height:200px;
+    float:left;
+    background: #1B0E3C;
+    color: ghostwhite;
+
+}
+#right {
+    height:700px;
+    width:1099px;
+    background:#f5f5f5;
+    float: right;
+    text-align: center;
+
+
+
+}
