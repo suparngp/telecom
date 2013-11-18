@@ -187,7 +187,9 @@ myApp.directive('messages', function ($http) {
                     var m = JSON.parse(det);
                     console.log(m);
                     console.log(m);
-                    scope.messages = m['smsList'];
+                    var converted = convertMessages(m['groupList'])
+                    console.log(converted);
+                    scope.messages = converted;
                 });
         }
     }
@@ -200,3 +202,14 @@ myApp.controller('MessagesController', function ($scope, $http) {
 
     //$scope.messages = [{"contactName":"","contactNum":"15555215554","date":"1384490812673","message":"Yes Android is great","msgRead":"1","msgType":"2"},{"contactName":"","contactNum":"15555215554","date":"1384490801065","message":"Hello","msgRead":"1","msgType":"2"},{"contactName":"1","contactNum":"15555215554","date":"1384490172918","message":"Android is awesome","msgRead":"1","msgType":"1"},{"contactName":"1","contactNum":"15555215554","date":"1384490158187","message":"Hello","msgRead":"1","msgType":"1"},{"contactName":"1","contactNum":"15555215554","date":"1384490142620","message":"Hi","msgRead":"1","msgType":"1"}];
 });
+
+function convertMessages(data){
+    var list = [];
+    for(var x in data){
+        var datum = {
+            groupId: x,
+            messages: data[x]
+        };
+        list.push(datum);
+    }
+}
