@@ -154,7 +154,16 @@ myApp.controller('ContactsController', function ($scope, $timeout) {
 myApp.filter('date', function(){
     return function(timestamp){
         console.log(timestamp);
-        return new Date(Number(timestamp));
+        try{
+            var d = new Date(timestamp);
+
+            return d.toString();
+        }
+        catch(error){
+            console.log(error.toString());
+            return "";
+        }
+
     }
 });
 myApp.directive('messages', function ($http) {
