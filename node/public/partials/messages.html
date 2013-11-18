@@ -15,7 +15,7 @@
                     </div>
                     <div class="panel-collapse collapse " id="message-{{ message.groupId }}">
                         <div class="panel-body">
-                            <div ng-repeat="text in message.messages | orderBy:'date':true" class="row">
+                            <div ng-repeat="text in message.messages | orderBy:'date':false" class="row">
                                 <div ng-class="{'col-sm-offset-4': text.msgType == '2'}" class="col-sm-8">
                                     <div class="alert" ng-class="{'alert-success': text.msgType == '2',
                                         'alert-info': text.msgType == '1'}">
