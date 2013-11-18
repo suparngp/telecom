@@ -153,7 +153,8 @@ myApp.controller('ContactsController', function ($scope, $timeout) {
 
 myApp.filter('date', function(){
     return function(timestamp){
-        return new Date(timestamp);
+        console.log(timestamp);
+        return new Date(Number(timestamp));
     }
 });
 myApp.directive('messages', function ($http) {
