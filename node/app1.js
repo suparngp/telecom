@@ -68,7 +68,7 @@ app.post('/send/sms', function(req, res, next){
 
     response = res;
     // TODO send the request to phone to send the sms
-    socket.emit('send_sms_req', JSON.stringify({number: req.body.number, message: req.body.content}));
+    phone1.emit('send_sms_req', JSON.stringify({number: req.body.number, message: req.body.content}));
 
 });
 var server = require('http').createServer(app);
