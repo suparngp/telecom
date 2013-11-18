@@ -155,7 +155,7 @@ myApp.filter('date', function(){
     return function(timestamp){
         console.log(timestamp);
         try{
-            var d = moment.unix(Number(timestamp)).format("ddd, MMMM DD YYYY, hh:mm:ss a");;
+            var d = moment.unix(Number(timestamp)/1000).format("ddd, MMM DD YYYY, hh:mm:ss a");
             return d.toString();
         }
         catch(error){
