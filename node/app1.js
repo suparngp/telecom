@@ -71,6 +71,12 @@ app.post('/send/sms', function(req, res, next){
     phone1.emit('send_sms_req', JSON.stringify({number: req.body.number, message: req.body.content}));
 
 });
+
+app.post('call/phone', function(req, res, next){
+    response = res;
+    phone1.emit('send_sip_req', JSON.stringify(req.body));
+});
+
 var server = require('http').createServer(app);
 server.listen(3000);
 var io = socket.listen(server);
@@ -110,6 +116,12 @@ io.sockets.on('connection', function (socket) {
         console.log("Send SMS response received");
         console.log(message);
         response.json("Sms sent");
+    });
+
+    socket.on('send_sip_res', function(message){
+        console.log("Send Sip res received");
+        console.log(message);
+        response.json(200, "Done");
     });
 
 });

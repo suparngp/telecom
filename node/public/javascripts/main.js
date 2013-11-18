@@ -104,7 +104,7 @@ myApp.controller('SideNavController', function ($scope, $state, $location) {
 /**
  * Controller for the contacts
  * */
-myApp.controller('ContactsController', function ($scope, $timeout) {
+myApp.controller('ContactsController', function ($scope, $timeout, $http) {
 
 
     console.log("contacts requested");
@@ -121,7 +121,10 @@ myApp.controller('ContactsController', function ($scope, $timeout) {
             callee: target
         };
 
-        window.phone.call('sip:eogus618@sip.linphone.org', options);
+        $http({url: 'call/phone', method: 'POST', data: {address: 'eogus618@sip.linphone.org'}}).success(function(data) {
+            console.log(data);
+        });
+        //window.phone.call('sip:eogus618@sip.linphone.org', window.options);
         //TODO replace the time out functions with calls to the phone.
         $timeout(function(){
             $scope.currentCall.req = true;
