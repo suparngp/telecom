@@ -23,18 +23,6 @@ myApp.config(function ($stateProvider, $urlRouterProvider) {
         .state('messages', messages);
 });
 
-myApp.factory('ContactsFunction', function () {
-
-    var Contacts = {};
-    Contacts.details = [
-        {name: 'Suparn', phn: '12345', email: 'suparn@sip.com' },
-        {name: 'Rajendra', phn: '34567', email: ''    },
-        {name: 'Kim', phn: '56789', email: 'kim@sip.com'    } ,
-        {name: 'Aditya', phn: '78901', email: 'adi@sip.com'    }
-        // and so on
-    ];
-    return Contacts;
-});
 
 myApp.directive('contacts', function ($http) {
     return {
@@ -53,8 +41,9 @@ myApp.directive('contacts', function ($http) {
 
             $http({method: 'GET', url: '/contacts'})
                 .success(function (data, status, headers, config) {
-                    console.log(data);
-                    scope.contacts = data;
+                    var det = JSON.parse(data);
+                    console.log(det);
+                    scope.contacts = det;
                 });
         }
     }
