@@ -113,6 +113,9 @@ myApp.controller('SideNavController', function ($scope, $state, $location) {
  * */
 myApp.controller('ContactsController', function ($scope, $timeout) {
 
+
+    console.log("contacts requested");
+
     $scope.call = function (modal, target) {
 
         $(modal).modal({

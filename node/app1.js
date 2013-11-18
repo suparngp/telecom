@@ -14,7 +14,9 @@ var http = require('http');
 var path = require('path');
 var socket = require("socket.io");
 var app = express();
+var phone1;
 
+var response;
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
@@ -37,6 +39,7 @@ app.get('/', function(req, res, next){
 app.get('/users', user.list);
 
 app.get('/contacts', function(req, res, next){
+    response = res;
     var Contacts= {};
     Contacts.details=[
         {name: 'Suparn',    phn: '12345',     email:'some@getonsip.com' },
@@ -47,7 +50,9 @@ app.get('/contacts', function(req, res, next){
     ];
 
     // TODO get the contacts from the phone and then send the JSON response to the browser.
-    res.json(Contacts);
+
+    phone1.emit('contact_req');
+    //res.json(Contacts);
 });
 
 app.get('/messages', function(req, res, next){
@@ -66,6 +71,7 @@ var io = socket.listen(server);
 
 
 io.sockets.on('connection', function (socket) {
+    phone1 = socket;
     console.log("connection");
     socket.on('message', function(message){
         console.log(message);
@@ -85,6 +91,7 @@ io.sockets.on('connection', function (socket) {
         console.log(message);
         console.log("Received the contacts list");
         socket.send("Received the contacts");
+        response.json(message);
     });
     socket.on('sms_res', function(message){
         console.log("Received the smses");
@@ -96,4 +103,5 @@ io.sockets.on('connection', function (socket) {
         console.log("Send SMS response received");
         console.log(message);
     });
+
 });
