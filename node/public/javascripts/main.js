@@ -82,6 +82,7 @@ myApp.controller('MainController', function ($scope, $http) {
             console.log(data);
             $scope.sms.success = true;
             $scope.sms.error = false;
+
             //$($scope.modal).modal('toggle');
         }).error(function () {
                 $scope.sms.success = false;
