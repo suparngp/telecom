@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="stylesheets/bootstrap.css" type="text/css" rel="stylesheet">
+    <link href="/stylesheets/custom.css" type="text/css" rel="stylesheet">
+    <title>NetCall</title>
+    <script src="javascripts/jquery.min.js"></script>
+    <script src="javascripts/angular.min.js"></script>
+    <script src="javascripts/angular-ui-router.min.js"></script>
+    <script src="javascripts/main.js"></script>
+
+    <script src="javascripts/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+</head>
+
+<body ng-app="myApp">
+
+
+<header>
+    <nav class="navbar navbar-fixed-top navbar-inverse">
+        <div class="container">
+            <a class="navbar-brand" href="/"></a>
+        </div>
+    </nav>
+</header>
+
+<div class="container" style="padding-top: 20px">
+    <div class="jumbotron" id="upper">
+        <div>
+            <h1 class="text-center"><strong><span class="glyphicon glyphicon-send"></span>&nbsp;NETCALL</strong></h1>
+
+            <p class="text-center">Left your Phone at Home?? Never LOOK BACK!</p>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="col-sm-3"></div>
+
+    <div class="col-sm-9">
+
+        <div class="panel-group" id="messages">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <a href="#message1" data-toggle="collapse" data-parent="#messages"><h4>2149371110</h4></a>
+                    </div>
+
+                </div>
+                <div class="panel-collapse" id="message1">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div ng-class="{'col-sm-offset-4': false}" class="col-sm-8">
+                                <div class="alert alert-success">
+                                    <div class="row">
+                                        <div class="col-sm-4"><strong>Date: Nov 1, 2010</strong></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <p style="color: black;">
+                                                This is a sample text. and it looks awesome.
+                                                This is a sample text. and it looks awesome.
+                                                This is a sample text. and it looks awesome.
+                                                This is a sample text. and it looks awesome.
+                                                This is a sample text. and it looks awesome.
+                                                This is a sample text. and it looks awesome.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div ng-class="{'col-sm-offset-4': true}" class="col-sm-8">
+                                <div class="alert alert-info">
+                                    <div class="row">
+                                        <div class="col-sm-4"><strong>Date: Nov 1, 2010</strong></div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <p style="color: black;">
+                                                This is a sample text. and it looks awesome.
+                                                This is a sample text. and it looks awesome.
+                                                This is a sample text. and it looks awesome.
+                                                This is a sample text. and it looks awesome.
+                                                This is a sample text. and it looks awesome.
+                                                This is a sample text. and it looks awesome.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

@@ -1,16 +1,47 @@
-<div class="page-header navbar-header text-center col-sm-12" style="margin-left: 0;background-color: lightgoldenrodyellow">
+<div class="page-header navbar-header text-center col-sm-12"
+     style="margin-left: 0;background-color: lightgoldenrodyellow">
     <h3 class="text-center">Messaging History</h3>
 </div>
 <div ng-controller="MessagesController">
     <div class="row">
-        <div class="col-sm-offset-3 col-sm-6">
-            <div class="media">
-                <a class="pull-left" href="#">
-                    <img class="media-object" src="http://placehold.it/150x150" alt="">
-                </a>
-                <div class="media-body">
-                    <h4 class="media-heading">Message heading</h4>
-                    <p>Why the hell am i still a message</p>
+        <div class="col-sm-12">
+            <div ng-repeat="message in messages" class="panel-group" id="#messages-{{ message.contactNum }}-{{ message.date }}">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            <a href="#message-{{ message.contactNum }}-{{ message.date }}" data-toggle="collapse" data-parent="#messages-{{ message.contactNum }}-{{ message.date }}"><h4>2149371110</h4></a>
+                        </div>
+
+                    </div>
+                    <div class="panel-collapse collapse " id="message-{{ message.contactNum }}-{{ message.date }}">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div ng-class="{'col-sm-offset-4': message.msgType == '2'}" class="col-sm-8">
+                                    <div class="alert" ng-class="{'alert-success': message.msgType == '2',
+                                        'alert-info': message.msgType == '1'}">
+                                        <div class="row">
+                                            <div class="col-sm-4"><strong>Date: Nov 1, 2010</strong></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <p style="color: black;">
+                                                    This is a sample text. and it looks awesome.
+                                                    This is a sample text. and it looks awesome.
+                                                    This is a sample text. and it looks awesome.
+                                                    This is a sample text. and it looks awesome.
+                                                    This is a sample text. and it looks awesome.
+                                                    This is a sample text. and it looks awesome.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <hr>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
