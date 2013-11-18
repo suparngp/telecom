@@ -42,8 +42,9 @@ myApp.directive('contacts', function ($http) {
             $http({method: 'GET', url: '/contacts'})
                 .success(function (data, status, headers, config) {
                     var det = JSON.parse(data);
-                    console.log(det);
-                    scope.contacts = det;
+                    var m = JSON.parse(det);
+                    console.log(m);
+                    scope.contacts = m;
                 });
         }
     }
