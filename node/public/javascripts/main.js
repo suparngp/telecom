@@ -155,8 +155,7 @@ myApp.filter('date', function(){
     return function(timestamp){
         console.log(timestamp);
         try{
-            var d = new Date(timestamp);
-
+            var d = new Date(Number(timestamp));
             return d.toString();
         }
         catch(error){
