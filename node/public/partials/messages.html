@@ -9,7 +9,7 @@
                 <div class="panel panel-warning">
                     <div class="panel-heading">
                         <div class="panel-title">
-                            <a href="#message-{{ message.contactNum }}-{{ message.date }}" data-toggle="collapse" data-parent="#messages-{{ message.contactNum }}-{{ message.date }}"><h4>2149371110</h4></a>
+                            <a href="#message-{{ message.contactNum }}-{{ message.date }}" data-toggle="collapse" data-parent="#messages-{{ message.contactNum }}-{{ message.date }}"><h4>{{ message.contactNum }}</h4></a>
                         </div>
 
                     </div>
@@ -20,17 +20,12 @@
                                     <div class="alert" ng-class="{'alert-success': message.msgType == '2',
                                         'alert-info': message.msgType == '1'}">
                                         <div class="row">
-                                            <div class="col-sm-4"><strong>Date: Nov 1, 2010</strong></div>
+                                            <div class="col-sm-4"><strong>Date: {{ message.date }}</strong></div>
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <p style="color: black;">
-                                                    This is a sample text. and it looks awesome.
-                                                    This is a sample text. and it looks awesome.
-                                                    This is a sample text. and it looks awesome.
-                                                    This is a sample text. and it looks awesome.
-                                                    This is a sample text. and it looks awesome.
-                                                    This is a sample text. and it looks awesome.
+                                                    {{ message.message }}
                                                 </p>
                                             </div>
                                         </div>
