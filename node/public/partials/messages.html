@@ -20,7 +20,7 @@
                                     <div class="alert" ng-class="{'alert-success': message.msgType == '2',
                                         'alert-info': message.msgType == '1'}">
                                         <div class="row">
-                                            <div class="col-sm-4"><strong>Date: {{ message.date }}</strong></div>
+                                            <div class="col-sm-4"><strong>Date: <span ng-bind="new Date(message.date)"></span></strong></div>
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-12">

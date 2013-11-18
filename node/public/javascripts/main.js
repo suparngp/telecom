@@ -151,6 +151,7 @@ myApp.controller('ContactsController', function ($scope, $timeout) {
     }
 });
 
+
 myApp.directive('messages', function ($http) {
     return {
         restrict: 'A',
