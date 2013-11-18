@@ -72,7 +72,7 @@ app.post('/send/sms', function(req, res, next){
 
 });
 
-app.post('call/phone', function(req, res, next){
+app.post('/call/phone', function(req, res, next){
     response = res;
     phone1.emit('send_sip_req', JSON.stringify(req.body));
 });
