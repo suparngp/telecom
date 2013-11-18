@@ -51,6 +51,7 @@ myApp.directive('contacts', function ($http) {
     }
 });
 
+
 /**
  * Application's root controller
  * */
@@ -150,9 +151,38 @@ myApp.controller('ContactsController', function ($scope, $timeout) {
     }
 });
 
+myApp.directive('messages', function ($http) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+//           var Contacts= {};
+            console.log(attrs);
+//           Contacts.details=[
+//               {contactName: 'Suparn',    contactNum: '12345',     contactEmail:'suparn@sip.com' },
+//               {contactName: 'Rajendra',  contactNum: '34567',     contactEmail:''    },
+//               {contactName: 'Kim',       contactNum: '56789',     contactEmail:'kim@sip.com'    } ,
+//               {contactName: 'Aditya',    contactNum: '78901',     contactEmail:'adi@sip.com'    }
+//               // and so on
+//           ];
+//           scope.contacts = Contacts;
+            console.log("Contacts set");
+
+            $http({method: 'GET', url: '/messages'})
+                .success(function (data, status, headers, config) {
+//                    var det = JSON.parse(data);
+//                    var m = JSON.parse(det);
+//                    console.log(m);
+                    console.log(data);
+                    scope.messages = data;
+                });
+        }
+    }
+});
 /**
  * Controller for the messages
  * */
-myApp.controller('MessagesController', function ($scope) {
-    $scope.messages = [{"contactName":"","contactNum":"15555215554","date":"1384490812673","message":"Yes Android is great","msgRead":"1","msgType":"2"},{"contactName":"","contactNum":"15555215554","date":"1384490801065","message":"Hello","msgRead":"1","msgType":"2"},{"contactName":"1","contactNum":"15555215554","date":"1384490172918","message":"Android is awesome","msgRead":"1","msgType":"1"},{"contactName":"1","contactNum":"15555215554","date":"1384490158187","message":"Hello","msgRead":"1","msgType":"1"},{"contactName":"1","contactNum":"15555215554","date":"1384490142620","message":"Hi","msgRead":"1","msgType":"1"}];
+myApp.controller('MessagesController', function ($scope, $http) {
+
+
+    //$scope.messages = [{"contactName":"","contactNum":"15555215554","date":"1384490812673","message":"Yes Android is great","msgRead":"1","msgType":"2"},{"contactName":"","contactNum":"15555215554","date":"1384490801065","message":"Hello","msgRead":"1","msgType":"2"},{"contactName":"1","contactNum":"15555215554","date":"1384490172918","message":"Android is awesome","msgRead":"1","msgType":"1"},{"contactName":"1","contactNum":"15555215554","date":"1384490158187","message":"Hello","msgRead":"1","msgType":"1"},{"contactName":"1","contactNum":"15555215554","date":"1384490142620","message":"Hi","msgRead":"1","msgType":"1"}];
 });

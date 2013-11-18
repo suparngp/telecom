@@ -56,7 +56,11 @@ app.get('/contacts', function(req, res, next){
 });
 
 app.get('/messages', function(req, res, next){
-
+    console.log("received the message req");
+    response = res;
+//    var data = [{"contactName":"","contactNum":"15555215554","date":"1384490812673","message":"Yes Android is great","msgRead":"1","msgType":"2"},{"contactName":"","contactNum":"15555215554","date":"1384490801065","message":"Hello","msgRead":"1","msgType":"2"},{"contactName":"1","contactNum":"15555215554","date":"1384490172918","message":"Android is awesome","msgRead":"1","msgType":"1"},{"contactName":"1","contactNum":"15555215554","date":"1384490158187","message":"Hello","msgRead":"1","msgType":"1"},{"contactName":"1","contactNum":"15555215554","date":"1384490142620","message":"Hi","msgRead":"1","msgType":"1"}];
+//    res.json(data);
+    phone1.emit('sms_req');
     // TODO send request to phone to get all the messages.
 });
 
@@ -97,6 +101,7 @@ io.sockets.on('connection', function (socket) {
         console.log("Received the smses");
         console.log(message);
         socket.send('Received the smses');
+        response.json(message);
     });
 
     socket.on('send_sms_res', function(message){
