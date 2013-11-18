@@ -204,8 +204,11 @@ myApp.controller('MessagesController', function ($scope, $http) {
 });
 
 function convertMessages(data){
+    console.log(data);
     var list = [];
     for(var x in data){
+        console.log(x);
+        console.log(data[x]);
         var datum = {
             groupId: x,
             messages: data[x]
