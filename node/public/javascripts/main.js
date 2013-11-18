@@ -102,18 +102,58 @@ myApp.controller('MainController', function ($scope, $http) {
 /**
  * Controller for the side nav menu
  * */
-myApp.controller('SideNavController', function ($scope) {
-    $scope.selected = 'home';
+myApp.controller('SideNavController', function ($scope, $state, $location) {
+    //$state.go($location.path().replace("/", ""));
+
+    $scope.selected = $location.path().replace("/", "");
 });
 
 /**
  * Controller for the contacts
  * */
-myApp.controller('ContactsController', function ($scope) {
-    $scope.call = function (target) {
+myApp.controller('ContactsController', function ($scope, $timeout) {
+
+    $scope.call = function (modal, target) {
+
+        $(modal).modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+
+        var x = $scope;
+        $scope.currentCall = {
+            callee: target
+        };
+
+        //TODO replace the time out functions with calls to the phone.
+        $timeout(function(){
+            $scope.currentCall.req = true;
+            $timeout(function(){
+                $scope.currentCall.sip = true;
+                $timeout(function(){
+                    $scope.currentCall.connected = true;
+                    $timeout(function(){
+                        $scope.currentCall.started = true;
+                        $timeout(function(){
+                            $scope.currentCall.progress = true;
+                        }, 4000);
+                        $timeout(function(){
+                            $scope.currentCall.error = true;
+                        }, 6000);
+                    }, 4000);
+                }, 4000);
+            }, 4000);
+        }, 4000);
         console.log("I am calling " + target);
+        $(modal).modal('show');
     };
 
+    $scope.endCall = function(modal){
+
+        //TODO add the end call support
+        $scope.currentCall = {};
+        $(modal).modal('hide');
+    }
 });
 
 /**
