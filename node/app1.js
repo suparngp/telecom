@@ -52,7 +52,7 @@ app.get('/contacts', function(req, res, next){
     // TODO get the contacts from the phone and then send the JSON response to the browser.
 
     phone1.emit('contact_req');
-    //res.json(Contacts);
+    res.json(Contacts);
 });
 
 app.get('/messages', function(req, res, next){
@@ -77,9 +77,9 @@ io.sockets.on('connection', function (socket) {
         console.log(message);
         socket.send(message);
 
-        socket.emit("contact_req", {'data': 'yahoo'});
-        socket.emit('sms_req', {data: 'yahoo'});
-        socket.emit('send_sms_req', JSON.stringify({number: '15555215556', message: "I am also!"}));
+//        socket.emit("contact_req", {'data': 'yahoo'});
+//        socket.emit('sms_req', {data: 'yahoo'});
+//        socket.emit('send_sms_req', JSON.stringify({number: '15555215556', message: "I am also!"}));
     });
 
     //socket.emit('news', { hello: 'world' });
