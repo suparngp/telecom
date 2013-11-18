@@ -215,4 +215,5 @@ function convertMessages(data){
         };
         list.push(datum);
     }
+    return list;
 }
