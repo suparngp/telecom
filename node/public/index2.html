@@ -49,8 +49,50 @@
                 </li>
             </ul>
         </div>
-        <div class="col-sm-9">
+        <div class="col-sm-9" ng-controller="MainController">
             <div ui-view></div>
+
+            <div id="sms-modal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4>Send Text Message: {{ sms.recipient.name }} <{{ sms.recipient.phn }}></h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" ng-submit="sendSms()">
+                                <div class="form-group">
+
+                                    <div class="col-sm-12">
+                                        <textarea ng-model="sms.content" class="form-control"
+                                                  rows="5"
+                                                  placeholder="Type"></textarea>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success">Send</button>
+
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <div ng-show="sms.success" class="alert alert-success">
+                                            Message was sent successfully.
+                                        </div>
+                                        <div ng-show="sms.error" class="alert alert-danger">
+                                            Error occurred while sending message.
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

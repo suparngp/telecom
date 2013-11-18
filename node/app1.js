@@ -45,9 +45,21 @@ app.get('/contacts', function(req, res, next){
         {name: 'Aditya',    phn: '78901',     email:'adthakkar@sip.com'    }
         // and so on
     ];
+
+    // TODO get the contacts from the phone and then send the JSON response to the browser.
     res.json(Contacts);
 });
 
+app.get('/messages', function(req, res, next){
+
+    // TODO send request to phone to get all the messages.
+});
+
+app.post('/send/sms', function(req, res, next){
+
+    // TODO send the request to phone to send the sms
+    res.json(req.body);
+});
 var server = require('http').createServer(app);
 server.listen(3000);
 var io = socket.listen(server);
