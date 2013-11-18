@@ -169,11 +169,11 @@ myApp.directive('messages', function ($http) {
 
             $http({method: 'GET', url: '/messages'})
                 .success(function (data, status, headers, config) {
-//                    var det = JSON.parse(data);
-//                    var m = JSON.parse(det);
-//                    console.log(m);
-                    console.log(data);
-                    scope.messages = data;
+                    var det = JSON.parse(data);
+                    var m = JSON.parse(det);
+                    console.log(m);
+                    console.log(m);
+                    scope.messages = m['smsList'];
                 });
         }
     }
