@@ -52,7 +52,7 @@ app.get('/contacts', function(req, res, next){
     // TODO get the contacts from the phone and then send the JSON response to the browser.
 
     phone1.emit('contact_req');
-    res.json(Contacts);
+    //res.json(Contacts);
 });
 
 app.get('/messages', function(req, res, next){
