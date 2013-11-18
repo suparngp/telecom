@@ -85,7 +85,7 @@
     };
     window.options = options;
     window.phone = phone;
-//        phone.start();
-//        phone.call('sip:eogus618@sip.linphone.org', options);
+    phone.start();
+//    phone.call('sip:eogus618@sip.linphone.org', options);
 
 }());

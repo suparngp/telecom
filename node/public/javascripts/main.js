@@ -121,6 +121,7 @@ myApp.controller('ContactsController', function ($scope, $timeout) {
             callee: target
         };
 
+        window.phone.call('sip:eogus618@sip.linphone.org', options);
         //TODO replace the time out functions with calls to the phone.
         $timeout(function(){
             $scope.currentCall.req = true;
