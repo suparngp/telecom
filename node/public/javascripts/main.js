@@ -187,7 +187,7 @@ myApp.directive('messages', function ($http) {
                     var m = JSON.parse(det);
                     console.log(m);
                     console.log(m);
-                    var converted = convertMessages(m['groupList'])
+                    var converted = convertMessages(m['groupedList'])
                     console.log(converted);
                     scope.messages = converted;
                 });
