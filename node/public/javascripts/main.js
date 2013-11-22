@@ -216,7 +216,9 @@ myApp.controller('ContactsController', function ($scope, $timeout, $http) {
 
     $scope.endCall = function(modal){
 
-        //TODO add the end call support
+        console.log("Ended the call");
+        phone.stop();
+
         $scope.currentCall = {};
         $(modal).modal('hide');
     }
