@@ -1,0 +1,44 @@
+<div class="page-header navbar-header text-center col-sm-12"
+     style="margin-left: 0;background-color: lightgoldenrodyellow">
+    <h3 class="text-center">Messaging History</h3>
+</div>
+<div ng-controller="MessagesController">
+    <div class="row">
+        <div class="col-sm-12" messages>
+            <div ng-repeat="message in messages" class="panel-group" id="#messages-{{ message.groupId }}">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            <a href="#message-{{ message.groupId }}" data-toggle="collapse" data-parent="#messages-{{ message.groupId }}"><h4>{{ message.groupId }}</h4></a>
+                        </div>
+
+                    </div>
+                    <div class="panel-collapse collapse " id="message-{{ message.groupId }}">
+                        <div class="panel-body">
+                            <div ng-repeat="text in message.messages | orderBy:'date':false" class="row">
+                                <div ng-class="{'col-sm-offset-4': text.msgType == '2'}" class="col-sm-8">
+                                    <div class="alert" ng-class="{'alert-success': text.msgType == '2',
+                                        'alert-info': text.msgType == '1'}">
+                                        <div class="row">
+                                            <div class="col-sm-12"><strong><span ng-bind="text.date | date"></span></strong></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <p style="color: black;">
+                                                    {{ text.message }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <hr>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

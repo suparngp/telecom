@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="stylesheets/bootstrap.css" type="text/css" rel="stylesheet">
+    <link href="/stylesheets/custom.css" type="text/css" rel="stylesheet">
+    <title>NetCall</title>
+    <script src="javascripts/jquery.min.js"></script>
+    <script src="javascripts/moment.js"></script>
+    <script src="javascripts/angular.min.js"></script>
+    <script src="javascripts/angular-ui-router.min.js"></script>
+    <script src="javascripts/streamcall.js"></script>
+    <script src="javascripts/netcall.js"></script>
+    <script src="javascripts/main.js"></script>
+
+    <script src="javascripts/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+</head>
+<!-- BODY STARTS........-->
+
+<body ng-app="myApp">
+
+<header>
+    <nav class="navbar navbar-fixed-top navbar-inverse">
+        <div class="container">
+            <a class="navbar-brand" href="/"></a>
+        </div>
+    </nav>
+</header>
+
+<div class="container" style="padding-top: 20px">
+    <div class="jumbotron" id="upper">
+        <div>
+            <h1 class="text-center"><strong><span class="glyphicon glyphicon-send"></span>&nbsp;NETCALL</strong></h1>
+
+            <p class="text-center">Left your Phone at Home?? Never LOOK BACK!</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3" ng-controller="SideNavController">
+            <ul class="nav nav-pills nav-stacked" style="visibility: inherit">
+                <li ng-click="selected = 'home'" ng-class="{active: selected == 'home'}"><a ui-sref="home">
+                    <span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Home</a>
+                </li>
+                <li ng-click="selected = 'contacts'" ng-class="{active: selected == 'contacts'}"><a ui-sref="contacts">
+                    <span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Contacts</a></li>
+                <li ng-click="selected = 'messages'" ng-class="{active: selected == 'messages'}"><a ui-sref="messages">
+                    <span class="glyphicon glyphicon-envelope"></span>&nbsp;&nbsp;Messages</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-9" ng-controller="MainController">
+            <div ui-view></div>
+
+            <div id="sms-modal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4>Send Text Message: {{ sms.recipient.name }} <{{ sms.recipient.phn }}></h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" ng-submit="sendSms()">
+                                <div class="form-group">
+
+                                    <div class="col-sm-12">
+                                        <textarea ng-model="sms.content" class="form-control"
+                                                  rows="5"
+                                                  placeholder="Type"></textarea>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success">Send</button>
+
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <div ng-show="sms.success" class="alert alert-success">
+                                            Message was sent successfully.
+                                        </div>
+                                        <div ng-show="sms.error" class="alert alert-danger">
+                                            Error occurred while sending message.
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<audio autoplay id="call"> </audio>
+<div id="footer" style="height: 60px;
+background-color: #f5f5f5; margin-top: 60px;">
+    <div class="container">
+        <p class="text-muted credit" style="margin: 20px 0">
+            Designed by Aditya, Raj, Kim, Suparn
+        </p>
+    </div>
+</div>
+</body>
+</html>

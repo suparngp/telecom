@@ -12,7 +12,7 @@ var socket = require("websocket.io");
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || '3000');
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -40,6 +40,9 @@ io.on('connection', function (socket) {
     socket.on('message', function(message){
         console.log(message);
         socket.send(message);
+        switch(message.msgType){
+
+        }
     });
 
     socket.emit('news', { hello: 'world' });
