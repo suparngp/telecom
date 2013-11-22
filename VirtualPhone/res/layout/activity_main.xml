@@ -42,11 +42,17 @@
         android:layout_alignParentRight="true"
         android:text="@string/sipRegister" />
     
+    <Button android:id="@+id/sipEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sipAdd"
+        android:text="@string/sipEnd" />
+    
     <TextView
         android:id="@+id/logs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:layout_below="@id/sipAdd" />
+        android:layout_below="@id/sipEnd" />
     
 </RelativeLayout>
