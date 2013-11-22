@@ -1,5 +1,45 @@
 var myApp = angular.module('myApp', ['ui.router']);
+var session;
+var audioElem = document.getElementById('call');
+var globalScope;
+var handlers = {
+    'progress': function (e) {
+        console.log(e);
+        console.log("Call is in progress");
+    },
+    'failed': function (e) {
+        console.log(e);
+        console.log("Call has failed");
+    },
+    'started': function (e) {
 
+        console.log(e);
+        console.log("call has started");
+        try{
+            document.getElementById('call').src
+                = window.URL.createObjectURL(session.getRemoteStreams()[0]);
+            console.log("Stream has been added");
+        }
+        catch(e){
+            console.log(e.toString());
+            console.log(e);
+        }
+
+    }
+};
+var options = {
+    eventHandlers: handlers,
+    mediaConstraints: {audio: true, video: true}
+};
+var configuration = {
+    ws_servers: ["wss://edge.sip.onsip.com"],
+    register: true,
+    'uri': 'sip:some@getonsip.com',
+    'authorization_user': "getonsip_some",
+    'password': 'zRFKwdKFvQsBqRVR'
+};
+
+var phone = new JsSIP.UA(configuration);
 myApp.config(function ($stateProvider, $urlRouterProvider) {
 
     $urlRouterProvider.when('', '/home');
@@ -121,29 +161,55 @@ myApp.controller('ContactsController', function ($scope, $timeout, $http) {
             callee: target
         };
 
-        $http({url: 'call/phone', method: 'POST', data: {address: emailId}}).success(function(data) {
-            console.log(data);
-        });
+//        $http({url: 'call/phone', method: 'POST', data: {address: emailId}}).success(function(data) {
+//            console.log(data);
+//        });
         //window.phone.call('sip:eogus618@sip.linphone.org', window.options);
         //TODO replace the time out functions with calls to the phone.
-        $timeout(function(){
-            $scope.currentCall.req = true;
-            $timeout(function(){
+
+        //send a requetx to the server and set the first check mark
+        $scope.currentCall.req = true;
+        console.log("Sent the request to make a SIP call");
+        globalScope = $scope;
+        $http({url: "/call/req", method: 'GET'})
+            .success(function(data){
+                //get the response from the server.
+                // This means the call has been initialized. Set the second check mark
+                //send the request to the server to check if the call has been connected
+                console.log("Phone 1 says call is initialized");
                 $scope.currentCall.sip = true;
-                $timeout(function(){
-                    $scope.currentCall.connected = true;
-                    $timeout(function(){
-                        $scope.currentCall.started = true;
-                        $timeout(function(){
-                            $scope.currentCall.progress = true;
-                        }, 4000);
-                        $timeout(function(){
-                            $scope.currentCall.error = true;
-                        }, 6000);
-                    }, 4000);
-                }, 4000);
-            }, 4000);
-        }, 4000);
+                console.log("Check with phone 1 is the call is connected");
+                $http({url: '/call/connected', method: 'GET'})
+                    .success(function(data){
+                        //this means that the sip call has been connected
+                        //Send a request to disconnect the call.
+                        console.log("Phone 1 says SIP call is connected");
+                        $scope.currentCall.connected = true;
+                        console.log("Send the request to Phone 1 to start the call relay process");
+                        $http({url: '/call/end', method: 'GET'})
+                            .success(function(data){
+                                //this means the call has been disconnected
+                                //start the sip call from the browser.
+                                console.log("Phone 1 has started the call relay process");
+                                phone.call('sip:' + emailId, options);
+                                $scope.currentCall.started = true;
+                                console.log("Phone 1 has successfully completed the call relay process.")
+                            })
+                            .error(function(data){
+                                console.log("Error: unable to send the request to being call relay process");
+                                $scope.currentCall.error = true;
+                            })
+                    })
+                    .error(function(data){
+                        console.log("Phone 1 was unable to connect the SIP call");
+                        $scope.currentCall.error = true;
+                    });
+
+            })
+            .error(function(data){
+                console.log("Error: Phone 1 was unable to initialize the SIP call");
+                $scope.currentCall.error = true;
+            });
         console.log("I am calling " + target);
         $(modal).modal('show');
     };
@@ -222,3 +288,57 @@ function convertMessages(data){
     }
     return list;
 }
+
+
+
+
+;
+(function () {
+    phone.on('connected', function (e) {
+        console.log(e);
+        console.log("I am connected to the network");
+    });
+
+    phone.on('disconnected', function (e) {
+        console.log(e);
+        console.log("I am disconnected from the network");
+    });
+
+    phone.on('newRTCSession', function (e) {
+        session = e.data.session;
+        console.log('session', session);
+
+        console.log(e);
+        console.log("I am on call");
+        globalScope.currentCall.progress = true;
+        globalScope.$apply();
+
+    });
+
+    phone.on('registered', function (e) {
+        console.log(e);
+        console.log("I am registered");
+    });
+
+    phone.on('unregistered', function (e) {
+        console.log(e);
+        console.log("I am unregistered");
+    });
+
+    phone.on('registrationFailed', function (e) {
+        globalScope.currentCall.error = true;
+        globalScope.$apply();
+        console.log(e);
+        console.log("Registration failed");
+
+    });
+
+
+
+
+    window.options = options;
+    window.phone = phone;
+    phone.start();
+//    phone.call('sip:eogus618@sip.linphone.org', options);
+
+}());

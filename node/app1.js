@@ -16,6 +16,8 @@ var socket = require("socket.io");
 var app = express();
 var phone1;
 
+var connected = false;
+var clientReq = null;
 var response;
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -33,19 +35,19 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
-app.get('/', function(req, res, next){
+app.get('/', function (req, res, next) {
     res.redirect('/index2.html');
 });
 app.get('/users', user.list);
 
-app.get('/contacts', function(req, res, next){
+app.get('/contacts', function (req, res, next) {
     response = res;
-    var Contacts= {};
-    Contacts.details=[
-        {name: 'Suparn',    phn: '12345',     email:'some@getonsip.com' },
-        {name: 'Rajendra',  phn: '34567',     email:''    },
-        {name: 'Kim',       phn: '56789',     email:'KoreaKim@sip.com'    } ,
-        {name: 'Aditya',    phn: '78901',     email:'adthakkar@sip.com'    }
+    var Contacts = {};
+    Contacts.details = [
+        {name: 'Suparn', phn: '12345', email: 'some@getonsip.com' },
+        {name: 'Rajendra', phn: '34567', email: ''    },
+        {name: 'Kim', phn: '56789', email: 'KoreaKim@sip.com'    } ,
+        {name: 'Aditya', phn: '78901', email: 'adthakkar@sip.com'    }
         // and so on
     ];
 
@@ -55,7 +57,7 @@ app.get('/contacts', function(req, res, next){
     //res.json(Contacts);
 });
 
-app.get('/messages', function(req, res, next){
+app.get('/messages', function (req, res, next) {
     console.log("received the message req");
     response = res;
 //    var data = [{"contactName":"","contactNum":"15555215554","date":"1384490812673","message":"Yes Android is great","msgRead":"1","msgType":"2"},{"contactName":"","contactNum":"15555215554","date":"1384490801065","message":"Hello","msgRead":"1","msgType":"2"},{"contactName":"1","contactNum":"15555215554","date":"1384490172918","message":"Android is awesome","msgRead":"1","msgType":"1"},{"contactName":"1","contactNum":"15555215554","date":"1384490158187","message":"Hello","msgRead":"1","msgType":"1"},{"contactName":"1","contactNum":"15555215554","date":"1384490142620","message":"Hi","msgRead":"1","msgType":"1"}];
@@ -64,7 +66,7 @@ app.get('/messages', function(req, res, next){
     // TODO send request to phone to get all the messages.
 });
 
-app.post('/send/sms', function(req, res, next){
+app.post('/send/sms', function (req, res, next) {
 
     response = res;
     // TODO send the request to phone to send the sms
@@ -72,9 +74,30 @@ app.post('/send/sms', function(req, res, next){
 
 });
 
-app.post('/call/phone', function(req, res, next){
+//app.post('/call/phone', function(req, res, next){
+//    response = res;
+//    phone1.emit('send_sip_req', JSON.stringify(req.body));
+//});
+
+
+app.get('/call/req', function (req, res, next) {
     response = res;
     phone1.emit('send_sip_req', JSON.stringify(req.body));
+});
+
+app.get('/call/connected', function (req, res, next) {
+    clientReq = res;
+    response = res;
+
+    if (connected) {
+        res.json(200);
+        clientReq = null;
+    }
+});
+
+app.get('/call/end', function (req, res, next) {
+    response = res;
+    phone.emit('end_sip_req', "Begin the relay");
 });
 
 var server = require('http').createServer(app);
@@ -85,7 +108,7 @@ var io = socket.listen(server);
 io.sockets.on('connection', function (socket) {
     phone1 = socket;
     console.log("connection");
-    socket.on('message', function(message){
+    socket.on('message', function (message) {
         console.log(message);
         socket.send(message);
 
@@ -99,28 +122,45 @@ io.sockets.on('connection', function (socket) {
         console.log(data);
     });
 
-    socket.on('contact_res', function(message){
+    socket.on('contact_res', function (message) {
         console.log(message);
         console.log("Received the contacts list");
         socket.send("Received the contacts");
         response.json(message);
     });
-    socket.on('sms_res', function(message){
+    socket.on('sms_res', function (message) {
         console.log("Received the smses");
         console.log(message);
         socket.send('Received the smses');
         response.json(message);
     });
 
-    socket.on('send_sms_res', function(message){
+    socket.on('send_sms_res', function (message) {
         console.log("Send SMS response received");
         console.log(message);
         response.json("Sms sent");
     });
 
-    socket.on('send_sip_res', function(message){
+    socket.on('send_sip_res', function (message) {
         console.log("Send Sip res received");
         console.log(message);
         response.json(200, "Done");
+    });
+
+    socket.on('sip_connected', function (message) {
+        console.log('SIP call connected');
+        console.log(message);
+        connected = true;
+        setTimeout(function () {
+            if (clientReq) {
+                response.json(200);
+            }
+        }, 4000);
+
+    });
+    socket.on('end_sip_res', function (message) {
+        console.log(message);
+        console.log("Beginning the call relay from app server");
+        response.json(200);
     });
 });
