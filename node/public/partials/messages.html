@@ -4,6 +4,15 @@
 </div>
 <div ng-controller="MessagesController">
     <div class="row">
+        <div class="col-sm-5">
+            <label for="messages-search">
+                <input class="form-control"
+                       id="messages-search" ng-model="search.message.goupId"
+                       type="text" placeholder="Type Number">r
+            </label>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-sm-12" messages>
             <div ng-repeat="message in messages" class="panel-group" id="#messages-{{ message.groupId }}">
                 <div class="panel panel-warning">
