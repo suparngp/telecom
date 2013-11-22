@@ -11,4 +11,5 @@
     <string name="sipPswd1">dxk123330</string>
     <string name="socStatus"><b>Not Connected to Server</b></string>
     <string name="sipStatus"><b>SIP Client Not Registered</b></string>
+    <string name="sipEnd">End Call</string>
 </resources>

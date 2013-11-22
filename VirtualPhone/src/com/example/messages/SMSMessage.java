@@ -4,6 +4,7 @@
 package com.example.messages;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Aditya
@@ -11,8 +12,9 @@ import java.util.ArrayList;
  */
 public class SMSMessage
 {
-  String msgType;
-  ArrayList<SMS> smsList;
+  private String msgType;
+  private ArrayList<SMS> smsList;
+  private HashMap<String, ArrayList<SMS>> groupedList;
 
   /**
    * @return the msgType
@@ -41,6 +43,20 @@ public class SMSMessage
   public void setSmsList(ArrayList<SMS> smsList)
   {
     this.smsList = smsList;
+  }
+  /**
+   * @return the groupedList
+   */
+  public HashMap<String, ArrayList<SMS>> getGroupedList()
+  {
+    return groupedList;
+  }
+  /**
+   * @param groupedList the groupedList to set
+   */
+  public void setGroupedList(HashMap<String, ArrayList<SMS>> groupedList)
+  {
+    this.groupedList = groupedList;
   }
 
 }

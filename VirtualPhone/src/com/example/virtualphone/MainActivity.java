@@ -2,6 +2,7 @@ package com.example.virtualphone;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +55,7 @@ public class MainActivity extends Activity
   public SipAudioCall call = null;
   public IncomingCallReceiver callReceiver;
   
-  private String serverAdd = "http://54.201.60.222:3000/";
+  private String serverAdd = "http://ec2-54-201-60-222.us-west-2.compute.amazonaws.com:3000";
   
   private TextView tSocStatus;
   private TextView tSipStatus;
@@ -63,6 +64,7 @@ public class MainActivity extends Activity
   
   private Button bStartSocket;
   private Button bSipReg;
+  private Button bSipEnd;
   
   private Handler myHandler;
 
@@ -73,29 +75,8 @@ public class MainActivity extends Activity
     {
       myHandler = new Handler();
       
-      ArrayList<Contact> contactList;
-      
-      ArrayList<SMS> smsList;
-      
       Gson gson = new Gson();
       
-      contactList = getContacts();
-      smsList = readTextMessage();
-      
-      final ContactMessage contactMsg = new ContactMessage();
-      contactMsg.setContactList(contactList);
-      contactMsg.setMsgType("Contact List");
-      
-      final SMSMessage txtMessage = new SMSMessage();
-      txtMessage.setSmsList(smsList);
-      txtMessage.setMsgType("Text Message List");
-      
-      String gsonString = gson.toJson(contactMsg);
-      Log.e("GSON", gsonString);
-      
-      gsonString = gson.toJson(txtMessage);
-      Log.e("GSON", gsonString);
-
       try
       {
         Log.d("SOCKET", "Creating Socket");
@@ -110,13 +91,43 @@ public class MainActivity extends Activity
             Log.e("SOCKET", "In the ON function " + arg0 );
             if(arg0.equals("contact_req"))
             {
+              ArrayList<Contact> contactList = getContacts();
+              final ContactMessage contactMsg = new ContactMessage();
+              contactMsg.setContactList(contactList);
+              contactMsg.setMsgType("Contact List");
+              
               String gsonString = new Gson().toJson(contactMsg);
               socket.emit("contact_res", gsonString);
+              Log.e("GSON", gsonString);
             }
             else if(arg0.equals("sms_req"))
             {
+              ArrayList<SMS> smsList = readTextMessage();
+              HashMap<String, ArrayList<SMS>> tmpGroup = new HashMap<String, ArrayList<SMS>>();
+              final SMSMessage txtMessage = new SMSMessage();
+              
+              for(int i=0; i<smsList.size(); i++)
+              {
+                SMS tmpSms = smsList.get(i);
+                if(tmpGroup.containsKey(tmpSms.getContactNum()))
+                {
+                  tmpGroup.get(smsList.get(i).getContactNum()).add(tmpSms);
+                }
+                else
+                {
+                  ArrayList<SMS> tmpList = new ArrayList<SMS>();
+                  tmpList.add(tmpSms);
+                  tmpGroup.put(tmpSms.getContactNum(), tmpList);
+                }
+              }
+              
+              txtMessage.setSmsList(smsList);
+              txtMessage.setGroupedList(tmpGroup);
+              txtMessage.setMsgType("Text Message List");
+              
               String gsonString = new Gson().toJson(txtMessage);
               socket.emit("sms_res", gsonString);
+              Log.e("GSON", gsonString);
             }
             else if(arg0.equals("send_sms_req"))
             {
@@ -129,6 +140,31 @@ public class MainActivity extends Activity
               
               sendTextMessage(num,msg);
               socket.emit("send_sms_res", "SMS Sent");
+            }
+            else if(arg0.equals("send_sip_req"))
+            {
+              JsonElement elem = new JsonParser().parse(String.valueOf(arg2[0]));
+              String sipAddress = elem.getAsJsonObject().get("address").getAsString();
+              
+              Log.e("SOCKET", "send_sip_req=" + sipAddress );
+              
+              sipCall(sipAddress);
+              socket.emit("send_sip_res", "SIP Initiated");
+            }
+            else if(arg0.equals("end_sip_req"))
+            {
+              if(call != null)
+              {
+                try
+                {
+                  call.endCall();
+                } catch (SipException e)
+                {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+                }
+              }
+              socket.emit("end_sip_res", "SIP Call Ended");
             }
           }
 
@@ -241,7 +277,28 @@ public class MainActivity extends Activity
     }
     
   };
+  
+  private OnClickListener sipEndListener = new OnClickListener()
+  {
 
+    @Override
+    public void onClick(View arg0)
+    {
+      if(call != null)
+      {
+        try
+        {
+          call.endCall();
+        } catch (SipException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+      
+    }
+  };
+  
   //Proof of Concept to send text message (VERIFIED)
   private void sendTextMessage(String sNum, String sMsg)
   {
@@ -268,13 +325,36 @@ public class MainActivity extends Activity
       while(query.moveToNext())
       {
         //Log.e("READ_SMS", new Gson().toJson(query));
-        String address = query.getString(query.getColumnIndex(columns[0])).replaceAll("[\\-\\s\\(\\)]", "");
-        String name = query.getString(query.getColumnIndex(columns[1]));
-        String date = query.getString(query.getColumnIndex(columns[2]));
-        String msg = query.getString(query.getColumnIndex(columns[3]));
-        String type = query.getString(query.getColumnIndex(columns[4]));
-        String read = query.getString(query.getColumnIndex(columns[5]));
-        
+        String address = "";
+        String name = "";
+        String date = "";
+        String msg = "";
+        String type = "";
+        String read = "";
+        if(query.getString(query.getColumnIndex(columns[0])) != null)
+        {
+          address = query.getString(query.getColumnIndex(columns[0])).replaceAll("[\\+\\-\\s\\(\\)]", "");
+        }
+        if(query.getString(query.getColumnIndex(columns[1])) != null)
+        {
+          name = query.getString(query.getColumnIndex(columns[1]));
+        }
+        if(query.getString(query.getColumnIndex(columns[2])) != null)
+        {
+          date = query.getString(query.getColumnIndex(columns[2]));
+        }
+        if(query.getString(query.getColumnIndex(columns[3])) != null)
+        {
+          msg = query.getString(query.getColumnIndex(columns[3]));
+        }
+        if(query.getString(query.getColumnIndex(columns[4])) != null)
+        {
+        type = query.getString(query.getColumnIndex(columns[4]));
+        }
+        if(query.getString(query.getColumnIndex(columns[5])) != null)
+        {
+          read = query.getString(query.getColumnIndex(columns[5]));
+        }
         tmpSMS = new SMS();
         
         tmpSMS.setContactNum(address);
@@ -306,7 +386,10 @@ public class MainActivity extends Activity
     ArrayList<Contact> retList = new ArrayList<Contact>();
     Contact tmpContact;
     
-    Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new String[] {Phone._ID, Phone.DISPLAY_NAME, Phone.NUMBER}, null, null, null);
+    ContentResolver cr = getContentResolver();
+    Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,null, null, null, null);
+    
+    //Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, new String[] {Phone._ID, Phone.DISPLAY_NAME, Phone.NUMBER}, null, null, null);
     String[] columns = new String[] {Phone.DISPLAY_NAME, Phone.NUMBER ,ContactsContract.Contacts.DISPLAY_NAME, CommonDataKinds.Email.DATA};
     
     if(cursor.getCount() > 0)
@@ -316,34 +399,42 @@ public class MainActivity extends Activity
       while(cursor.moveToNext())
       {      
         String pName = cursor.getString(cursor.getColumnIndex(columns[0]));
-        Cursor cursorEmail = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, new String[] {CommonDataKinds.Email._ID, ContactsContract.Contacts.DISPLAY_NAME, CommonDataKinds.Email.DATA}, null, null, null);
+        String pNum = "";
+        //String pNum = (cursor.getString(cursor.getColumnIndex(columns[1]))).replaceAll("[\\-\\s\\(\\)]", "");
+        String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+        String email = "";
         
-        if(cursorEmail.getCount() > 0) 
+        if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
         {
-          while(cursorEmail.moveToNext()) 
+          Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,
+              ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?", new String[]{id}, null);
+          while (pCur.moveToNext()) 
           {
-            String eName = cursorEmail.getString(cursorEmail.getColumnIndex(columns[2]));
-
-            if(pName.equals(eName)) 
-            {
-              String name = pName;
-              String pNum = (cursor.getString(cursor.getColumnIndex(columns[1]))).replaceAll("[\\-\\s\\(\\)]", "");
-              String email = cursorEmail.getString(cursorEmail.getColumnIndex(columns[3]));
-                          
-              tmpContact = new Contact();
-              tmpContact.setContactName(name);
-              tmpContact.setContactNum(pNum);
-              tmpContact.setContactEmail(email);
-              
-              retList.add(tmpContact);
-              
-              //Log.e("GET_CONTACT", tmpContact.getContactName());
-              //Log.e("GET_CONTACT", tmpContact.getContactNum());
-              //Log.e("GET_CONTACT", tmpContact.getContactEmail());
-            }
+            pNum = pCur.getString(pCur.getColumnIndex(
+                ContactsContract.CommonDataKinds.Phone.NUMBER)).replaceAll("[\\+\\-\\s\\(\\)]", "");
           }
-          cursorEmail.close();
+          pCur.close();
+          
+          Cursor cursorEmail = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+              null, ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", new String[]{id}, null);
+          
+          //Cursor cursorEmail = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, new String[] {CommonDataKinds.Email._ID, ContactsContract.Contacts.DISPLAY_NAME, CommonDataKinds.Email.DATA}, null, null, null);
+          
+          if(cursorEmail.getCount() > 0) 
+          {
+            while(cursorEmail.moveToNext()) 
+            {
+              email = cursorEmail.getString(cursorEmail.getColumnIndex(columns[3]));
+            }
+            cursorEmail.close();
+          }
         }
+        tmpContact = new Contact();
+        tmpContact.setContactName(pName);
+        tmpContact.setContactNum(pNum);
+        tmpContact.setContactEmail(email);
+        
+        retList.add(tmpContact);
       }
     }
     return retList;
@@ -536,6 +627,7 @@ public class MainActivity extends Activity
     setContentView(R.layout.activity_main);
     bStartSocket = (Button) this.findViewById(R.id.startSocket);
     bSipReg = (Button) this.findViewById(R.id.sipReg);
+    bSipEnd = (Button) this.findViewById(R.id.sipEnd);
     
     tSocStatus = (TextView) this.findViewById(R.id.socketStatus);
     tSipStatus = (TextView) this.findViewById(R.id.sipStatus);
@@ -555,6 +647,8 @@ public class MainActivity extends Activity
     
     //this will register client 1 with getonsip.com server
     bSipReg.setOnClickListener(sipRegListener);
+    
+    bSipEnd.setOnClickListener(sipEndListener);
   }
 
   //This creates the menu
