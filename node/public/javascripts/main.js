@@ -171,7 +171,7 @@ myApp.controller('ContactsController', function ($scope, $timeout, $http) {
         $scope.currentCall.req = true;
         console.log("Sent the request to make a SIP call");
         globalScope = $scope;
-        $http({url: "/call/req", method: 'GET'})
+        $http({url: "/call/req", method: 'POST', data: {address: emailId}})
             .success(function(data){
                 //get the response from the server.
                 // This means the call has been initialized. Set the second check mark
