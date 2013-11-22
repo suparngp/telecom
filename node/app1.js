@@ -97,7 +97,7 @@ app.get('/call/connected', function (req, res, next) {
 
 app.get('/call/end', function (req, res, next) {
     response = res;
-    phone.emit('end_sip_req', "Begin the relay");
+    phone1.emit('end_sip_req', "Begin the relay");
 });
 
 var server = require('http').createServer(app);
