@@ -311,7 +311,7 @@ function convertMessages(data){
         console.log(e);
         console.log("I am on call");
         globalScope.currentCall.progress = true;
-        globalScope.$apply();
+        //globalScope.$apply();
 
     });
 
@@ -327,7 +327,7 @@ function convertMessages(data){
 
     phone.on('registrationFailed', function (e) {
         globalScope.currentCall.error = true;
-        globalScope.$apply();
+        //globalScope.$apply();
         console.log(e);
         console.log("Registration failed");
 
