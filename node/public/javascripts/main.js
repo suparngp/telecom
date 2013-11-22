@@ -109,7 +109,7 @@ myApp.controller('ContactsController', function ($scope, $timeout, $http) {
 
     console.log("contacts requested");
 
-    $scope.call = function (modal, target) {
+    $scope.call = function (emailId, modal, target) {
 
         $(modal).modal({
             backdrop: 'static',
@@ -121,7 +121,7 @@ myApp.controller('ContactsController', function ($scope, $timeout, $http) {
             callee: target
         };
 
-        $http({url: 'call/phone', method: 'POST', data: {address: 'eogus618@sip.linphone.org'}}).success(function(data) {
+        $http({url: 'call/phone', method: 'POST', data: {address: emailId}}).success(function(data) {
             console.log(data);
         });
         //window.phone.call('sip:eogus618@sip.linphone.org', window.options);

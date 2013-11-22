@@ -123,5 +123,4 @@ io.sockets.on('connection', function (socket) {
         console.log(message);
         response.json(200, "Done");
     });
-
 });
