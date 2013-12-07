@@ -1,0 +1,98 @@
+<div class="page-header navbar-text text-center col-sm-12"
+     style="margin-left: 0; background-color: lightgoldenrodyellow">
+    <h3 class="text-center">Contact List</h3>
+</div>
+<div ng-controller="ContactsController">
+    <!--Contact search field begins-->
+    <div class="row">
+        <div class="col-sm-5">
+            <label for="contacts-search">
+                <input class="form-control"
+                       id="contacts-search" ng-model="search.contactName"
+                       type="text" placeholder="Search Contact">
+            </label>
+        </div>
+    </div>
+    <!--Contact search field ends-->
+
+    <!--Contacts list begins-->
+    <div class="row">
+        <div class="col-sm-8">
+            <div contacts class="panel-group" id="contacts-parent">
+                <div class="panel panel-info" ng-repeat="results in contacts.contactList | filter:search | orderBy: 'name'">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            <a data-toggle="collapse" data-parent="#contacts-parent"
+                               href="#collapse-{{ results.contactNum }}">
+                                <h4><strong>{{results.contactName}}</strong></h4>
+                            </a>
+                        </div>
+                    </div>
+                    <div id="collapse-{{ results.contactNum }}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <strong>CELL: </strong>{{results.contactNum}} &nbsp;&nbsp;&nbsp;<strong>Email: </strong>{{results.contactEmail}}
+
+                        </div>
+                        <div class="panel-footer">
+                            <div >
+                                <button ng-show="results.contactEmail" class="btn-success table-bordered input-sm"
+                                        ng-click="call(results.contactEmail, '#call-modal', results.contactEmail)"><span
+                                        class="glyphicon glyphicon-phone"></span>&nbsp;Call
+                                </button>
+                                <button class="btn-warning table-bordered input-sm"
+                                        ng-click="openSms('#sms-modal', results.contactName, results.contactNum)"><span
+                                        class="glyphicon glyphicon-envelope"></span>&nbsp;SMS
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Contacts list ends-->
+
+    <!--Call modal begins-->
+    <div id="call-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Calling {{ currentCall.callee }}</h3>
+                </div>
+
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <span ng-show="currentCall.req" class="glyphicon glyphicon-ok pull-right"
+                              style="color: #468847"></span>
+                        Sending request to call {{ currentCall.callee }}
+                    </div>
+
+                    <div class="alert alert-info">
+                        <span ng-show="currentCall.sip" class="glyphicon glyphicon-ok pull-right"
+                              style="color: #468847"></span>
+                        Sip call process initiated between your phone and {{ currentCall.callee }}
+                    </div>
+                    <div class="alert alert-info">
+                        <span ng-show="currentCall.connected" class="glyphicon glyphicon-ok pull-right"
+                              style="color: #468847"></span>
+                        SIP call connected between your phone and {{ currentCall.callee }}
+                    </div>
+                    <div class="alert alert-info">
+                        <span ng-show="currentCall.started" class="glyphicon glyphicon-ok pull-right"
+                              style="color: #468847"></span>
+                        Call relay process started {{ currentCall.callee }}
+                    </div>
+                    <div class="alert alert-success" ng-show="currentCall.progress">
+                        Call connected to your browser {{ currentCall.callee }}
+                    </div>
+                    <div class="alert alert-danger" ng-show="currentCall.error">
+                        Error while calling {{ currentCall.callee }}
+                    </div>
+                    <button ng-disabled="!currentCall.error && !currentCall.progress" type="button"
+                            ng-click="endCall('#call-modal')" class="btn-warning btn">End Call</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Call modal ends-->
+</div>
